@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--manual: https://docs.mapbox.com/studio-manual/overview/
+            https://docs.mapbox.com/mapbox-gl-js/api/
+            https://docs.mapbox.com/help/glossary/attribution/ 
+            https://docs.mapbox.com/api/accounts/
+            https://docs.mapbox.com/mapbox.js/api/v3.1.1/ 
+    livro:  https://tools.ietf.org/html/rfc7946
+mapa do mapbox: http://geojson.io/
+    versões:https://github.com/mapbox/mapbox-gl-js/blob/master/CHANGELOG.md -->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Teste Mapbox</title>        
+        <!--Se vc remover o css do mapbox vai poder modificá-lo pelo css que vc criou-->
+        
+        <script src="js/main.js" type="text/javascript"></script>
+        <link type="text/css" rel="stylesheet" href="css/style.css">
+        
+        
+        <script src="./api/api.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script> <!--estilos dos pontos-->
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+        <!--<script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+        <script src="https://unpkg.com/supercluster@3.0.2/dist/supercluster.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>-->
+        <!--<link href="https://api.mapbox.com/mapbox-assembly/v0.21.1/assembly.min.css" rel="stylesheet">
+        <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.21.1/assembly.js"></script>-->
+        
+    </head>
+    <body onload="init()"> <!--Quando a pagina terminar de carregar, o 'onload' vai inicia o mapa 1 e 2 que estão no arquivo JavaScript-->
+        <div id='map'> <!--os objetos colocados dentro dessa div irão pegar o css do 'style' que esta dentro dela, se tirar vai pegar o css do mapbox, mas se estiver fora ou o css do mapbox não estiver disponivel pode escolhe a modificação de sua preferencia-->
+        </div>
+        <div id="barraBotao">
+            <input type="text" id="textInput" placeholder="Pesquisar Profisional/tipo de treino">
+            <button id="botao" class='btn'>Btn</button>
+
+            
+
+        </div>
+    </body>
+</html>

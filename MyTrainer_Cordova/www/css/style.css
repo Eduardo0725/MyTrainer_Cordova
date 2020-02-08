@@ -1,0 +1,40 @@
+/*o que vc for escrever aqui não vai acontecer se não tira o css do mapbox no HTML*/
+body{
+    display: flex;
+}
+
+#map{
+    flex: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin-top: -8px;
+    margin-left: -8px;
+}
+
+#barraBotao{
+    display: flex;
+    position: absolute;
+    flex-direction: row;
+    bottom: 30px;
+    left: 20px;
+    right: 20px;
+}
+
+#textInput{
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    border: white;
+}
+
+#botao{
+    background-color: black;
+    padding: 20px;
+    border-radius: 35px;
+    margin-left: 10px;
+    border: black;
+}
+
