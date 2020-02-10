@@ -36,9 +36,9 @@ function init() {
             type: 'geojson',
             data: {
                 "type": "FeatureCollection",
-                "features": [
+                "features": 
                     Personal(),
-                ]
+                
             }
         })
 console.log(Personal());
