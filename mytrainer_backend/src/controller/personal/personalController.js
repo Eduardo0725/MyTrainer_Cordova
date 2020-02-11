@@ -12,6 +12,15 @@ module.exports = {
         return response.json(PersonalID);
     },
 
+    async confirmLogin(request, response){
+        const { cpf, senha } = request.query;
+        let PersonalID = await Personal.findOne({ cpf, senha });
+        if (!PersonalID) {
+            PersonalID = {erro:"Error: CPF e/ou Senha incorreto(s)"}
+        }
+        return response.json(PersonalID);
+    },
+
     async story(request, response) {
         const { nome, idade, sexo, cpf, tipo_de_treino, email, senha} = request.body;
         let nomeDividido = nameOrganizer(nome);
