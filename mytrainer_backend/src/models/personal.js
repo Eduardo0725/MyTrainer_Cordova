@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const personalShema = new mongoose.Schema({
     nome: String,
+    primeiroNome: String,
+    segundoNome: String,
+    terceiroNome: String,
+    quartoNome: String,
     idade: String,
     sexo: String,
     cpf: Number,

@@ -1,26 +1,30 @@
 const Personal = require('../../models/personal');
-const Client = require('../../models/client');
-//const axios = require('axios');
+const nameOrganizer = require('../../util/nameOrganizer');
+const nameSelector = require('../../util/nameSelector');
 
 module.exports = {
-    async index(request,response){
-        const { buscar } = request.query;
-        nome = buscar
-        let PersonalID = await Personal.find({ nome });
-        if(!PersonalID[0]){
+    async index(request, response) {
+        const { busca } = request.query;
+        let PersonalID = await Personal.find( nameSelector(busca) );
+        if (!PersonalID[0]) {
             PersonalID = {erro:"não existe"}
         }
         return response.json(PersonalID);
     },
 
-    async story(request,response){
-        const { nome, idade, sexo, cpf, tipo_de_treino, email, senha, /*latitude, longitude*/ } = request.body;
+    async story(request, response) {
+        const { nome, idade, sexo, cpf, tipo_de_treino, email, senha} = request.body;
+        let nomeDividido = nameOrganizer(nome);
 
         let PersonalID = await Personal.findOne({ cpf })
 
-        if (!PersonalID){
+        if (!PersonalID) {
             PersonalID = await Personal.create({
                 nome,
+                primeiroNome: nomeDividido.primeiroNome,
+                segundoNome: nomeDividido.segundoNome,
+                terceiroNome: nomeDividido.terceiroNome || null,
+                quartoNome: nomeDividido.quartoNome || null,
                 idade,
                 sexo,
                 cpf,
@@ -33,8 +37,8 @@ module.exports = {
                     longitude: null,
                 }
             })
-        }else{
-            PersonalID = {error : "Já existe essa conta"}
+        } else {
+            PersonalID = { error: "Já existe essa conta" }
         }
         return response.json(PersonalID);
     },
