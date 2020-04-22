@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Firebase-->
+    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+    <script src="database/firebase.js"></script>
+    <!--Firebase-->
+
+    <script>
+        url = decodeURIComponent(document.documentURI);
+        email = "email=";
+        if(url.indexOf(email) >= 0){
+            email = url.indexOf(email) + email.length;
+            email = url.slice(email);
+        }
+    </script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+
+    <script src="api/api.js"></script>
+
+    <script src="js/main.js"></script>
+
+    <script src="controller/geolocateMap.js"></script>
+    <script src="controller/navigatorMap.js"></script>
+
+    <script src="source/sourcePersonals.js"></script>
+
+    <script src="layers/pointsStyle.js"></script>
+    <script src="layers/3d.js"></script>
+
+    <script src="services/personalMarker.js"></script>
+    <script src="services/personalPopup.js"></script>
+    <script src="services/selectorMarker.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="css/map.css">
+
+    <link type="text/css" rel="stylesheet" href="css/principalCliente.css" />
+
+    <title>Document</title>
+</head>
+
+<body onload="init(email)">
+    <div id="corpo">
+        <div id="barra">
+            <a onclick="abrir_caixa()"><img src="img/nav.png" width="50px" height="50px" alt="icone"></a>
+            <input type="text" id="textInput" placeholder="Pesquisar Local...">
+            <button type="button">Btn</button>
+        </div>
+
+        <div id="caixa">
+            <a onclick="fechar_caixa()" id="link_fechar"><img src="img/fechar.png" width="30px" height="30px"
+                    alt="icone2" id="img_fechar"></a>
+            <a href="#"><img src="img/perfil.png" height="120px" width="120px" id="img_perfil"></img></a>
+            <div id="lista">
+                <p><a href="PrincipalCliente.html">Pesquisar Treiners</a></p>
+                <p><a href="meustreinosCliente.html">Meus Treinos</a></p>
+                <p><a href="meuperfilCliente.html">Meu Perfil</a></p>
+                <p><a href="cadastroPT.html">Trabalhe Conosco</a></p>
+                <p><a href="index.html">Sair</a></p>
+            </div>
+            <p><b>MyTrainer</b>Versão 1.0</p>
+        </div>
+    </div>
+
+    <div id='map'></div>
+    <div id='principal'></div>
+
+    <script>
+        setTimeout(()=>{
+            document.querySelector('button.mapboxgl-ctrl-geolocate').click();
+        },5000)
+
+        function abrir_caixa() {
+            document.getElementById('caixa').style.visibility = "visible";
+        }
+
+        function fechar_caixa() {
+            document.getElementById('caixa').style.visibility = "hidden";
+        }
+    </script>
+    
+</body>
+
+</html>

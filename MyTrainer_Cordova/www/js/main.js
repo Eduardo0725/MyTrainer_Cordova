@@ -1,4 +1,10 @@
-function init() {
+async function init(email) {
+
+    cliente = await validate(email, "cliente");
+    console.log(cliente);
+    personals = await Personals();
+    geojson = await Geojson(personals);
+
     //Map //https://docs.mapbox.com/mapbox-gl-js/api/#map
     mapboxgl.accessToken = 'pk.eyJ1IjoiZWR1YXJkb2FjNyIsImEiOiJjazNwNXRqYmMyOGw4M21vM3BmdHl3Z3NzIn0.XAq35G0W92TM-gHFt3W_Bg'; //https://docs.mapbox.com/mapbox-gl-js/api/#accesstoken
     var map = new mapboxgl.Map({
@@ -13,26 +19,65 @@ function init() {
     });
 
     map.on('load', () => { //https://docs.mapbox.com/mapbox-gl-js/api/#map#on
-
-        //conts
-        const layers = map.getStyle().layers; //const para instanciar layers do mapbox
-         //const para instanciar marker do mapbox
+        
+        geolocateMap(map) //adiciona botão de geolocalização
+        navigatorMap(map) //adiciona botões de zoom e bússola
 
         //source //https://docs.mapbox.com/mapbox-gl-js/api/#map#addsource
-        sourcePersonals(map) //fonte de coordenadas dos personals
+        sourcePersonals(map, geojson) //fonte de coordenadas dos personals
 
         //layers //https://docs.mapbox.com/mapbox-gl-js/api/#map#addlayer
+        const layers = map.getStyle().layers;
         pointsStyle(layers, map) //função para estilos dos pontos
-        function3D(layers, map) //função para deixar o mapa em 3D
+        // function3D(layers, map) //função para deixar o mapa em 3D
 
         //methods
         map.doubleClickZoom.disable() //Desabilita o zoom de click duplo
 
+
+        // personalMarker(map)//Adicionar um marcador personalizado com uma foto do personal numa coordenada especifica
+
         selectorMarker(map)//Dois click para colocar um marcador no mapa e um click para retirá-lo
 
-        personalMarker(map)//Adicionar um marcador personalizado com uma foto do personal numa coordenada especifica
-
         personalPopup(map)//Adicionar uma caixa de informações do personal ao clicar
+        
+        contagem = 0;
+        setInterval(()=>{
+            return atualiza(map, layers);
+        },15000)
+
     });
 }
+async function atualiza(map, layers){
+    nameLayer = 'points';
+    nameSource = 'pointsSources';
 
+    personals = await Personals();
+    console.log("Personals => " + personals);
+    geojson = await Geojson(personals);
+    console.log("Geojson => " + geojson);
+
+    map.removeLayer('points');
+    map.removeSource(nameSource);
+
+    map.addSource('pointsSources', {
+        type: 'geojson',
+        data: {
+            "type": "FeatureCollection",
+            "features": geojson
+        }
+    })
+
+    map.addLayer({
+        id: 'points',
+        source: 'pointsSources',
+        type: 'circle',
+        paint: {
+            'circle-radius': 10,
+            'circle-color': 'black'
+        }
+    });
+
+    contagem += 1;
+    console.log(contagem);
+}

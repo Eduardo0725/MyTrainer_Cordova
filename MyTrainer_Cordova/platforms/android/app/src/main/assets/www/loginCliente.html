@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+	<title> Login </title>
+
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+	<script type="text/javascript" src="database/firebase.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/logCliente.css">
+	<script>
+		//verificando campos
+		db = firebase.firestore();
+		var loading = false;
+
+		async function login() {
+
+			if (loading) {
+				return
+			}
+
+			loading = true;
+
+			var user = document.getElementById("email").value;
+			var pass = document.getElementById("senha").value;
+
+			if (user == "" || pass == "") {
+				alert("Email ou Senha Inválidos");
+				return loading = false;
+			}
+
+			await db.collection("cliente").where("email", "==", user).get()
+				.then(querySnapshot => {
+					if (querySnapshot.empty) {
+						validate = false;
+						return validate;
+					}
+
+					querySnapshot.forEach(doc => {
+						validate = doc.data();
+						return validate;
+					});
+				})
+				.catch(err => {
+					alert("Erro na requisição. Erro: " + err);
+					return validate = "erro";
+				})
+				.finally(() => {
+
+					if (validate == "erro") {
+						return loading = false;
+					}
+
+					if (!validate) {
+						alert("validate vazio");
+						document.getElementById("email").value = "";
+						document.getElementById("senha").value = "";
+						return loading = false;
+					}
+
+					if (validate.senha == pass) {
+						return document.getElementById('form').submit();
+					}
+					else {
+						document.getElementById("email").value = "";
+						document.getElementById("senha").value = "";
+						alert("Email ou Senha incorretos");
+						return loading = false;
+					}
+
+					alert("Erro na validação.");
+					return loading = false;
+				})
+		}
+	</script>
+	<style>
+		body {
+			background: url("img/fundo4.jpg") no-repeat fixed;
+			background-size: 100%;
+		}
+
+		hr {
+			border: 1px solid #000;
+		}
+	</style>
+</head>
+
+<body>
+	<form id="form" action="principalCliente.html" method="GET">
+		<div class="formulario">
+			<center>
+				<h3> Já tem conta? <br> Continue conosco! </h3>
+				<hr>
+				<h3>Email: </h3>
+				<input type="text" name="email" id="email" placeholder="  ex: exemplo@email.com"
+					size="50"></input><br /></br>
+				<h3>Senha: </h3>
+				<input type="password" id="senha" placeholder="  ********" size="50"></input><br /><br />
+				<br>
+				<hr>
+				<br>
+				<a onclick="login()" id="login">
+					<div class="link0">
+						<center>Logar
+					</div>
+				</a> ou
+				<a href="cadastroCliente.html">
+					<div class="link1">Cadastre-se</div>
+				</a>
+			</center><br>
+		</div>
+
+		<header>
+			<center><img src="img/logo4.png" height="60px" width="60px"></center>
+			<a href="index.html">
+				<div class="voltar"><img src="img/voltar.png" height="25px" width="25px"></img></div>
+			</a>
+		</header>
+	</form>
+</body>
+
+</html>

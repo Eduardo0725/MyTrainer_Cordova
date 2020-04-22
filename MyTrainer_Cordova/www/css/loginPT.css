@@ -1,0 +1,95 @@
+﻿a{
+	text-decoration: none;
+}
+
+.formulario{
+	position: relative;
+	height: 97%;
+	width: 80%;
+	top: 90px;
+	left: 10%;
+	border: 2px solid #000000;
+	border-radius: 20px;
+	background-color: #f0f0f055;
+	margin-bottom: 20px;
+}
+
+.voltar{
+	position: fixed;
+	top: 15px;
+	left: 15px;
+}
+
+input#email,#senha{
+	height: 35px;
+	width: 90%;
+	border: 1px solid #000;
+	border-radius: 30px;
+}
+
+input#personalt{
+	width: 20px;
+	height:20px;
+}
+
+p{
+	color: #ff0000;
+}
+
+header{
+	position: fixed;
+	height: 60px;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	background-color: #33c91d;
+	border-bottom: 2px solid #000;
+}
+
+.colaborador{
+	position: fixed;
+	top: 60px;
+	background-color: #000;
+	color: #fff;
+	height: 20px;
+	width: 100%;
+	border-top: 5px solid #000;;
+}
+
+nav{
+	width: 100%;
+	position: fixed; 
+	top: 50px;
+}
+
+.link0{
+	background-color: #33c91d;
+	width: 120px;
+	height: 20px;
+	color: #000;
+	border: 2px solid #000;
+	border-radius: 20px;
+}
+
+.link0:hover{
+	background-color: #000;
+	color: #fff;
+	border: 2px solid #33c91d;
+	border-radius: 20px;
+}
+
+.link1{
+	background-color: #33c91d;
+	width: 120px;
+	height: 20px;
+	color: #000;
+	border: 2px solid #000;
+	border-radius: 20px;
+}
+
+.link1:hover{
+	background-color: #000;
+	color: #fff;
+	border: 2px solid #33c91d;
+	border-radius: 20px;
+}

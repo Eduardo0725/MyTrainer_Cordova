@@ -1,0 +1,59 @@
+#map {
+  position: absolute;
+  width: 100%;
+  height: 91%;
+  bottom: -1px;
+  z-index: 1;
+}
+
+/* .mapboxgl-ctrl-top-right {
+  visibility: hidden;
+} */
+
+.mapboxgl-popup {
+  max-width: 400px;
+  font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  overflow-anchor: initial;
+}
+
+#principal{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 70px;
+  z-index: 0;
+  background-color: white;
+}
+
+#principal #pagina {
+  position: absolute;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+#principal #pagina header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#principal #pagina header img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+#user-info {
+  margin-left: 10px;
+}
+
+#user-info strong {
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
+}
+
+#user-info span {
+  color: #999;
+}
+

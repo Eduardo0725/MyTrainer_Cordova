@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+	<script type="text/javascript" src="database/firebase.js"></script>
+	<script src="api/api.js"></script>
+	<script type="text/javascript" src="utils/fomatting.js"></script>
+	<script type="text/javascript" src="utils/removeSpace.js"></script>
+
+	<title> Colaborador | Dados de Login </title>
+	<link rel="stylesheet" type="text/css" href="css/cadPT3.css">
+	<style>
+		body {
+			background: url("img/fundo4.jpg") no-repeat fixed;
+			background-size: 100%;
+		}
+
+		hr {
+			border: 1px solid #000;
+		}
+
+		h4,
+		h5 {
+			position: relative;
+			left: 5px;
+		}
+	</style>
+	<script>
+		db = firebase.firestore();
+		uri = decodeURIComponent(document.documentURI);
+		info = formatting(uri, [
+			"pt1",
+			"cep",
+			"rua",
+			"numero",
+			"bairro",
+			"complemento",
+			"cidade",
+			"estado"
+		]);
+
+		pt1 = info[0].split(",");
+		info.splice(0, 1);
+		info = [...pt1, ...info];
+		info = removeSpace(info);
+
+		//verificando campos
+		async function validarCampos() {
+			let user = document.getElementById("user").value;
+			let senha = document.getElementById("senha").value;
+			let confsenha = document.getElementById("confsenha").value;
+
+			if (user == "" || senha == "" || confsenha == "") {
+				return alert("Por favor, preencha todos os campos!");
+			}
+
+			if (senha != confsenha) {
+				return alert("As senhas devem ser iguais!");
+			}
+
+			await validate(user, "personal").then(validate => {
+				if (!validate) {
+					data = new Date;
+					let visto_por_ultimo = [
+						{
+							dia: data.getDate(),
+							mes: data.getMonth() + 1,
+							ano: data.getFullYear()
+						},
+						{
+							hora: data.getHours(),
+							min: data.getMinutes(),
+							seg: data.getSeconds(),
+						}
+					];
+					return save(user, senha, visto_por_ultimo);
+				}
+				return alert("Esse email já existe.");
+			});
+		}
+		async function save(user, senha, visto_por_ultimo) {
+			await db.collection("personal").add({
+				"nome": info[0],
+				"sobrenome": info[1],
+				"datanasc": info[2],
+				"rg" : info[3],
+				"cpf" : info[4],
+				"phone": info[5],
+				"celular": info[6],
+				"cep": info[7],
+				"rua": info[8],
+				"numero": info[9],
+				"bairro": info[10],
+				"complemento": info[11],
+				"cidade": info[12],
+				"estado": info[13],
+				"email": user,
+				"senha": senha,
+				"coords": {
+					"Latitude": 0,
+					"Longitude": 0,
+				},
+				"certificado": certificado,
+				"foto": foto,
+				"visto_por_ultimo" : visto_por_ultimo,
+				"meus_treinos": []
+			}).then(() => {
+				return document.getElementById('form').submit();
+			}).catch(err => {
+				return alert("Erro no cadastro, tente novamente mais tarde.");
+			})
+		}
+
+		var foto = "";
+		var certificado = "";
+
+	    function openFile(event, img) {
+			var input = event.target;
+		
+			var reader = new FileReader();
+			
+			reader.readAsDataURL(input.files[0]);
+			
+			reader.onload = function(){
+				var dataURL = reader.result;
+				console.log(dataURL)
+				var output = document.getElementById(img);
+				output.src = dataURL;
+				if(img == "img_perfil"){
+					return foto = dataURL;
+				}
+				return certificado = dataURL;
+			};
+		};
+	</script>
+</head>
+
+<body>
+	<div class="formulario">
+		<center>
+			<h2> Ainda não tem conta? <br> Trabalhe Conosco! </h2>
+		</center>
+		<hr>
+		<h4> Dados de Login </h4>
+		<hr>
+		<center>
+			<form id="form" action="./loginPT.html" method="POST"></form>
+				<h3>Email: </h3>
+				<input type="text" id="user" placeholder="  ex: exemplo@email.com" size="60"> *</input><br /><br />
+				<h3>Senha: </h3>
+				<input type="password" id="senha" placeholder="  ********" size="30"> *</input><br /><br />
+				<h3>Confirme sua senha: </h3>
+				<input type="password" id="confsenha" placeholder="  ********" size="30"> *
+				<hr><br>
+				<p> Insira sua foto de perfil: * </p>
+				<br>
+				<input type="file" id="perfil" accept="image/*" onchange="openFile(event,'img_perfil')" capture/>
+				<img id='img_perfil' width="150px" height="150px"><br>
+				<hr><br>
+				<p> Para confirmarmos que você é um profissional autenticado, precisamos
+					<br> de uma foto do seu certificado.<br> Por favor, insira a imagem abaixo: </p>
+				<br>
+				<input type="file" id="certificado" accept="image/*" onchange="openFile(event,'img_certificado')" capture/>
+				<img id='img_certificado' width="200px" height="150px"><br>
+				<br><br>
+				<hr><br>
+				<a onclick="validarCampos()" id="cadastro">
+					<div class="link0">Cadastrar</div>
+				</a> ou
+				<a href="loginPT.html">
+					<div class="link1">Logue-se</div>
+				</a>
+		</center><br>
+	</div>
+
+	<header>
+		<center><img src="img/logo4.png" height="60px" width="60px"></center>
+		<a href="cadastroPT.html">
+			<div class="voltar"><img src="img/voltar.png" height="25px" width="25px"></img></div>
+		</a>
+		<center>
+			<div class="colaborador">
+				COLABORADOR
+			</div>
+		</center>
+	</header>
+
+	
+</body>
+
+</html>

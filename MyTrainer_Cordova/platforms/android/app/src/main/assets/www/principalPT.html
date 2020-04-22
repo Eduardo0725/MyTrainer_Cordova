@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+
+	<!--Firebase-->
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+	<script src="database/firebase.js"></script>
+	<!--Firebase-->
+
+	<script src="api/api.js"></script>
+
+	<title> Meus Treinos </title>
+	<link rel="stylesheet" type="text/css" href="css/principalPT.css">
+	<style>
+		body {
+			background-color: #fff;
+		}
+	</style>
+
+	<script>
+		async function validar() {
+			url = decodeURIComponent(document.documentURI);
+			email = "email=";
+
+			if (url.indexOf(email) >= 0) {
+				email = url.indexOf(email) + email.length;
+				email = url.slice(email);
+				validate = await validate(email, "personal");
+				if (validate == false) {
+					alert("Email não conectado!");
+				} else {
+					return post_position(validate[0]);
+				}
+			} else {
+				alert("Email não conectado!");
+			}
+		}
+
+		
+
+		function func_data(){
+			data = new Date;
+			let visto_por_ultimo = [
+				{
+					dia: data.getDate(),
+					mes: data.getMonth() + 1,
+					ano: data.getFullYear()
+				},
+				{
+					hora: data.getHours(),
+					min: data.getMinutes(),
+					seg: data.getSeconds(),
+				}
+			];
+			return visto_por_ultimo;
+		}
+
+		function enviarData(id, visto_por_ultimo){
+			let httpHeaders = { 'Content-Type' : 'application/json', 'Accept-Charset' : 'utf-8' };
+			let myHeaders = new Headers(httpHeaders);
+
+			fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/last_personal_access',{
+					method: 'POST',
+					body: JSON.stringify({ 
+						id: id,
+						visto_por_ultimo: visto_por_ultimo
+					}),
+					headers: myHeaders,
+					mode: 'cors',
+					cache: 'default'
+			}).then(response => {
+				return response.json();
+			}).then(response => {
+				console.log(response);
+			})
+		}
+
+		async function post_position(id) {
+			data_acesso = setInterval(()=>{
+				visto_por_ultimo = func_data();
+				console.log(visto_por_ultimo)
+				enviarData(id, visto_por_ultimo);
+			},20000)
+			
+			navigator.geolocation.watchPosition(
+				position => {
+					lat = position.coords.latitude
+					lon = position.coords.longitude
+					console.log("Latitude => " + lat + "\nLongitude => " + lon);
+					let httpHeaders = { 'Content-Type' : 'application/json', 'Accept-Charset' : 'utf-8' };
+					let myHeaders = new Headers(httpHeaders);
+
+					fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/last_personal_coords',{
+						method: 'POST',
+						body: JSON.stringify({ 
+							id: id,
+							latitude : lat,
+							longitude : lon
+						}),
+						headers: myHeaders,
+						mode: 'cors',
+						cache: 'default'
+					}).then(response => {
+						return response.json();
+					}).then(response => {
+						visto_por_ultimo = func_data();
+						console.log(visto_por_ultimo)
+						enviarData(id, visto_por_ultimo);
+						console.log(response);
+					})
+				},
+				err => {
+					alert(err);
+					clearInterval(data_acesso);
+				}
+			);
+		}
+		
+		validar();
+
+		function verificaTreinos() {
+			var treinos = 0;
+
+			if (treinos == 0) {
+				document.getElementById("comtreinos").style.display = "none";
+				return true;
+			}
+			else {
+				document.getElementById("semtreinos").style.display = "none";
+				return true;
+			}
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="comtreinos">
+		<div id="treino">
+			<div id="imagem">
+				<img src="img/perfil.png" height="60px" width="60px"></img>
+			</div>
+
+			<div id="dados">
+				<p>
+					Nome:___________________Idade:__ <br>
+					Endereço:_______________________ <br>
+					Situação:_______________ <br>
+					Início:__/__/_________Horário:__:__ <br>
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="semtreinos">
+		<br><br><br><br><br><br><br><br><br><br><br><br>
+		<center>
+			<h2>Você ainda não possuí treinos!</h2>
+		</center>
+	</div>
+
+	<header>
+		<center>
+			<h1><b>MEUS TREINOS<b></h1>
+		</center>
+		<input type="checkbox" id="check">
+		<label id="icone" for="check"><img src="img/nav.png" width="30px" height="30px" alt="icone"></label>
+		<div class="barra">
+			<label id="icone2" for="check"><img src="img/fechar.png" width="40px" height="40px" alt="icone2"></label>
+			<br>
+			<center>
+				<a href=""><img src="img/perfil.png" height="110px" width="110px"></img></a>
+				<nav>
+					<a href="principalPT.html">
+						<div class="link"><br>Meus Treinos</div>
+					</a>
+					<a href="notificaçõesPT.html">
+						<div class="link"><br>Notificações</div>
+					</a>
+					<a href="meuperfilPT.html">
+						<div class="link"><br>Meu Perfil</div>
+					</a>
+					<a href="faleconoscoPT.html">
+						<div class="link"><br>Fale Conosco</div>
+					</a>
+					<a href="index.html">
+						<div class="link"><br>Sair</div>
+					</a><br>
+					<img src="img/logo.png" height="60px" width="60px"></img>
+					<h4>Versão 1.0</h4>
+				</nav>
+			</center>
+		</div>
+	</header>
+</body>
+
+</html>
