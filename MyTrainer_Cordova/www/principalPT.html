@@ -17,6 +17,8 @@
 
 	<script src="api/api.js"></script>
 
+	<script src="utils/redirect.js"></script>
+
 	<title> Meus Treinos </title>
 	<link rel="stylesheet" type="text/css" href="css/principalPT.css">
 	<style>
@@ -27,13 +29,13 @@
 
 	<script>
 		async function validar() {
-			url = decodeURIComponent(document.documentURI);
-			email = "email=";
+			if(localStorage.getItem("usuario_email") && localStorage.getItem("usuario_id")){
+				email = localStorage.getItem("usuario_email");
+				let id = localStorage.getItem("usuario_id");
+				console.log("id => " + id + "\nemail => " + email);
 
-			if (url.indexOf(email) >= 0) {
-				email = url.indexOf(email) + email.length;
-				email = url.slice(email);
 				validate = await validate(email, "personal");
+	
 				if (validate == false) {
 					alert("Email não conectado!");
 				} else {
@@ -191,7 +193,7 @@
 					<a href="faleconoscoPT.html">
 						<div class="link"><br>Fale Conosco</div>
 					</a>
-					<a href="index.html">
+					<a onclick="sair()">
 						<div class="link"><br>Sair</div>
 					</a><br>
 					<img src="img/logo.png" height="60px" width="60px"></img>
@@ -200,6 +202,15 @@
 			</center>
 		</div>
 	</header>
+
+	<script>
+		function sair(){
+            localStorage.removeItem("usuario_id");
+            localStorage.removeItem("usuario_email");
+            localStorage.removeItem("usuario_tipo");
+            return redirect('index.html', 'post');
+        }
+	</script>
 </body>
 
 </html>

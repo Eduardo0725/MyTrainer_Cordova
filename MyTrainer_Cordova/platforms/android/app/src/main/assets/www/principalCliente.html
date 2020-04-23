@@ -12,11 +12,10 @@
     <!--Firebase-->
 
     <script>
-        url = decodeURIComponent(document.documentURI);
-        email = "email=";
-        if(url.indexOf(email) >= 0){
-            email = url.indexOf(email) + email.length;
-            email = url.slice(email);
+        if(localStorage.getItem("usuario_email") && localStorage.getItem("usuario_id")){
+            email = localStorage.getItem("usuario_email");
+            let id = localStorage.getItem("usuario_id");
+            console.log("id => " + id + "\nemail => " + email);
         }
     </script>
 
@@ -38,6 +37,8 @@
     <script src="services/personalMarker.js"></script>
     <script src="services/personalPopup.js"></script>
     <script src="services/selectorMarker.js"></script>
+
+    <script src="utils/redirect.js"></script>
 
     <link type="text/css" rel="stylesheet" href="css/map.css">
 
@@ -63,7 +64,7 @@
                 <p><a href="meustreinosCliente.html">Meus Treinos</a></p>
                 <p><a href="meuperfilCliente.html">Meu Perfil</a></p>
                 <p><a href="cadastroPT.html">Trabalhe Conosco</a></p>
-                <p><a href="index.html">Sair</a></p>
+                <p><a onclick="sair()">Sair</a></p>
             </div>
             <p><b>MyTrainer</b>Versão 1.0</p>
         </div>
@@ -83,6 +84,13 @@
 
         function fechar_caixa() {
             document.getElementById('caixa').style.visibility = "hidden";
+        }
+
+        function sair(){
+            localStorage.removeItem("usuario_id");
+            localStorage.removeItem("usuario_email");
+            localStorage.removeItem("usuario_tipo");
+            return redirect('index.html', 'post');
         }
     </script>
     

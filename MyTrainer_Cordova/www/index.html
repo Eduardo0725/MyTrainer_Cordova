@@ -5,7 +5,10 @@
 	<meta charset="UTF-8">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+	
+	<script src="utils/redirect.js"></script>
+
 	<title> Bem Vindo! </title>
 	<style>
 		body{background: url("img/fundo4.jpg") no-repeat fixed; background-size: 100%;}
@@ -32,5 +35,15 @@
 	<header>
 		<center><img src="img/logo4.png" height="60px" width="60px"></center>
 	</header>
+
+	<script>
+		if(localStorage.getItem("usuario_tipo")){
+			if(localStorage.getItem("usuario_tipo") == 1){
+				redirect('principalCliente.html', 'post');
+			}else{
+				redirect('principalPT.html', 'post');
+			}
+		}
+	</script>
 </body>
 </html>

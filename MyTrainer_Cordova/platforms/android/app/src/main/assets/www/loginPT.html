@@ -58,7 +58,7 @@
 					}
 
 					querySnapshot.forEach(doc => {
-						validate = doc.data();
+						validate = [doc.id, doc.data()];
 						return validate;
 					});
 				})
@@ -79,7 +79,10 @@
 						return loading = false;
 					}
 
-					if (validate.senha == pass) {
+					if (validate[1].senha == pass) {
+						localStorage.setItem('usuario_id', validate[0]);
+						localStorage.setItem('usuario_email', validate[1].email);
+						localStorage.setItem('usuario_tipo', 0);
 						return document.getElementById('form').submit();
 					}
 					else {
