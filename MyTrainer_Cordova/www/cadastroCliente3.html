@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon"/>
+	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
 	<meta charset="UTF-8">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-	
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
-	<script type="text/javascript" src="database/firebase.js"></script>
+
 	<script src="api/api.js"></script>
+
 	<script type="text/javascript" src="utils/fomatting.js"></script>
-	<script type="text/javascript" src="utils/removeSpace.js"></script>
+	<script type="text/javascript" src="utils/addSpace.js"></script>
 
 	<title> Cadastro | Dados de Login </title>
 	<link rel="stylesheet" type="text/css" href="css/cadCliente3.css">
 	<style>
-	body{background: url("img/fundo4.jpg") no-repeat fixed; background-size: 100%;}
-	hr{border: 1px solid #000;}
-	h4,h5{position: relative; left: 5px;}
+		body {
+			background: url("img/fundo4.jpg") no-repeat fixed;
+			background-size: 100%;
+		}
+
+		hr {
+			border: 1px solid #000;
+		}
+
+		h4,
+		h5 {
+			position: relative;
+			left: 5px;
+		}
 	</style>
 	<script>
-		db = firebase.firestore();
+		foto = "";
+
 		uri = decodeURIComponent(document.documentURI);
 		info = formatting(uri, [
 			"pt1",
@@ -37,103 +47,139 @@
 		]);
 
 		pt1 = info[0].split(",");
-		info.splice(0,1);
+		info.splice(0, 1);
 		info = [...pt1, ...info];
-		info = removeSpace(info);
+		info = addSpace(info);
 
 		//verificando campos
-		async function validarCampos(){
+		async function validarCampos() {
 			let user = document.getElementById("user").value;
 			let senha = document.getElementById("senha").value;
 			let confsenha = document.getElementById("confsenha").value;
-			
-			if(user=="" || senha=="" || confsenha==""){
-				return 	alert("Por favor, preencha todos os campos!");
+
+			if (user == "" || senha == "" || confsenha == "") {
+				return alert("Por favor, preencha todos os campos!");
 			}
 
-			if(senha != confsenha){
+			if (senha != confsenha) {
 				return alert("As senhas devem ser iguais!");
 			}
 
-			await validate(user, "cliente").then(validate => {
-				if(!validate){
-					return save(user, senha);
+			data = new Date;
+			let visto_por_ultimo = [
+				{
+					dia: data.getDate(),
+					mes: data.getMonth() + 1,
+					ano: data.getFullYear()
+				},
+				{
+					hora: data.getHours(),
+					min: data.getMinutes(),
+					seg: data.getSeconds(),
 				}
-				return alert("Esse email já existe.");
-			});
-
+			];
+			return save(user, senha, visto_por_ultimo);
 		}
 
-		async function save(user, senha){
-			await db.collection("cliente").add({
-				"nome" : info[0],
-				"sobrenome" : info[1],
-				"datanasc" : info[2],
-				"phone" : info[3],
-				"celular" : info[4],
-				"cep" : info[5],
-				"rua" : info[6],
-				"numero" : info[7],
-				"bairro" : info[8],
-				"complemento" : info[9],
-				"cidade" : info[10],
-				"estado" : info[11],
-				"email" : user,
-				"senha" : senha,
-				"foto": foto
-			}).then(()=>{
+		async function save(user, senha, visto_por_ultimo) {
+			fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/create_client', {
+				method: "POST",
+				body: JSON.stringify({
+					"nome": info[0],
+					"sobrenome": info[1],
+					"datanasc": info[2],
+					"phone": info[3],
+					"celular": info[4],
+					"cep": info[5],
+					"rua": info[6],
+					"numero": info[7],
+					"bairro": info[8],
+					"complemento": info[9],
+					"cidade": info[10],
+					"estado": info[11],
+					"email": user,
+					"senha": senha,
+					"foto": foto,
+					"visto_por_ultimo": visto_por_ultimo,
+				}),
+				headers: new Headers({ 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' }),
+				mode: 'cors',
+				cache: 'default',
+			}).then(response => {
+				if (!response.ok) {
+					throw new Error('Erro: ' + response.status)
+				}
+				return response.json();
+			}).then(response => {
+				if (response.erro) {
+					if (response.erro == "Esse email já existe.") {
+						return alert("Esse email já existe.");
+					}
+					return alert("Erro no banco de dados, tente novamente mais tarde.");
+				}
 				return document.getElementById('form').submit();
 			}).catch(err => {
+				console.error("Erro: " + err);
 				return alert("Erro no cadastro, tente novamente mais tarde.");
-			})
+			});
 		}
-
-		var foto = "";
 
 		function openFile(event) {
 			var input = event.target;
-		
+
 			var reader = new FileReader();
-			
+
 			reader.readAsDataURL(input.files[0]);
-			
-			reader.onload = function(){
+
+			reader.onload = function () {
 				var dataURL = reader.result;
 				console.log(dataURL)
 				var output = document.getElementById("img_perfil");
 				output.src = dataURL;
-				
+
 				return foto = dataURL;
 			};
 		};
 	</script>
 </head>
-<body> 
+
+<body>
 	<div class="formulario">
-		<center><h3> Ainda não tem conta? <br> Entre para o time! </h3></center>
+		<center>
+			<h3> Ainda não tem conta? <br> Entre para o time! </h3>
+		</center>
 		<hr>
-			<h4> Dados de Login </h4>
+		<h4> Dados de Login </h4>
 		<hr>
 		<form id="form" action="./loginCliente.html" method="post"></form>
-			<center><h3>Email: </h3>
-            <input type="text" id="user" placeholder="  ex: exemplo@email.com" size="60"> *<br>
-            <h3>Senha: </h3>
-            <input type="password" id="senha" placeholder="  ********" size="30"> * <br>
+		<center>
+			<h3>Email: </h3>
+			<input type="text" id="user" placeholder="  ex: exemplo@email.com" size="60"> *<br>
+			<h3>Senha: </h3>
+			<input type="password" id="senha" placeholder="  ********" size="30"> * <br>
 			<h3>Confirmar senha: <h3>
-			<input type="password" id="confsenha" placeholder="  ********" size="30"> * </h3><br>
-			<hr><br>
+					<input type="password" id="confsenha" placeholder="  ********" size="30"> * </h3><br>
+				<hr><br>
 				<p> Insira sua foto de perfil: * </p>
 				<br>
-				<input type="file" id="perfil" accept="image/*" onchange="openFile(event)" capture/>
+				<input type="file" id="perfil" accept="image/*" onchange="openFile(event)" capture />
 				<img id='img_perfil' width="150px" height="150px"><br>
-			<hr><br>
-			<a onclick="validarCampos()" id="cadastro"><div class="link0">Cadastrar</div></a> ou 
-			<a href="loginCliente.html"><div class="link1">Logue-se</div></a></center><br>
+				<hr><br>
+				<a onclick="validarCampos()" id="cadastro">
+					<div class="link0">Cadastrar</div>
+				</a> ou
+				<a href="loginCliente.html">
+					<div class="link1">Logue-se</div>
+				</a>
+		</center><br>
 	</div>
-	
+
 	<header>
 		<center><img src="img/logo4.png" height="60px" width="60px"></center>
-		<a href="cadastroCliente2.html"><div class="voltar"><img src="img/voltar.png" height="25px" width="25px"></img></div></a>
+		<a href="cadastroCliente2.html">
+			<div class="voltar"><img src="img/voltar.png" height="25px" width="25px"></img></div>
+		</a>
 	</header>
 </body>
+
 </html>

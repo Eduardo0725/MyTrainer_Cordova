@@ -1,4 +1,4 @@
-function removeSpace(textos){
+function addSpace(textos){
     array = [];
     textos.forEach(doc => {
         doc = doc.replace("+"," ");

@@ -8,13 +8,6 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 
-	<!--Firebase-->
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
-	<script src="database/firebase.js"></script>
-	<!--Firebase-->
-
 	<script src="api/api.js"></script>
 
 	<script src="utils/redirect.js"></script>
@@ -28,27 +21,34 @@
 	</style>
 
 	<script>
+		function sair(){
+            localStorage.removeItem("usuario_id");
+            localStorage.removeItem("usuario_email");
+            localStorage.removeItem("usuario_tipo");
+            return redirect('index.html', 'post');
+		}
+		
 		async function validar() {
 			if(localStorage.getItem("usuario_email") && localStorage.getItem("usuario_id")){
-				email = localStorage.getItem("usuario_email");
-				let id = localStorage.getItem("usuario_id");
-				console.log("id => " + id + "\nemail => " + email);
+				let email = localStorage.getItem("usuario_email");
+				usuario_id = localStorage.getItem("usuario_id");
+				console.log("id => " + usuario_id + "\nemail => " + email);
 
-				validate = await validate(email, "personal");
+				validation = await findData("personal", usuario_id);
 	
-				if (validate == false) {
+				if (!validation) {
 					alert("Email não conectado!");
+					sair();
 				} else {
-					return post_position(validate[0]);
+					return send_position(usuario_id);
 				}
 			} else {
 				alert("Email não conectado!");
+				sair();
 			}
 		}
 
-		
-
-		function func_data(){
+		function formatting_date(){
 			data = new Date;
 			let visto_por_ultimo = [
 				{
@@ -65,15 +65,15 @@
 			return visto_por_ultimo;
 		}
 
-		function enviarData(id, visto_por_ultimo){
+		function send_date(id, visto_por_ultimo){
 			let httpHeaders = { 'Content-Type' : 'application/json', 'Accept-Charset' : 'utf-8' };
 			let myHeaders = new Headers(httpHeaders);
 
 			fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/last_personal_access',{
 					method: 'POST',
 					body: JSON.stringify({ 
-						id: id,
-						visto_por_ultimo: visto_por_ultimo
+						"id": id,
+						"visto_por_ultimo": visto_por_ultimo
 					}),
 					headers: myHeaders,
 					mode: 'cors',
@@ -85,11 +85,11 @@
 			})
 		}
 
-		async function post_position(id) {
+		async function send_position(id) {
 			data_acesso = setInterval(()=>{
-				visto_por_ultimo = func_data();
+				visto_por_ultimo = formatting_date();
 				console.log(visto_por_ultimo)
-				enviarData(id, visto_por_ultimo);
+				send_date(id, visto_por_ultimo);
 			},20000)
 			
 			navigator.geolocation.watchPosition(
@@ -113,9 +113,9 @@
 					}).then(response => {
 						return response.json();
 					}).then(response => {
-						visto_por_ultimo = func_data();
+						visto_por_ultimo = formatting_date();
 						console.log(visto_por_ultimo)
-						enviarData(id, visto_por_ultimo);
+						send_date(id, visto_por_ultimo);
 						console.log(response);
 					})
 				},
@@ -202,15 +202,6 @@
 			</center>
 		</div>
 	</header>
-
-	<script>
-		function sair(){
-            localStorage.removeItem("usuario_id");
-            localStorage.removeItem("usuario_email");
-            localStorage.removeItem("usuario_tipo");
-            return redirect('index.html', 'post');
-        }
-	</script>
 </body>
 
 </html>
