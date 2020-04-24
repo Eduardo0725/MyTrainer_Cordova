@@ -1,7 +1,17 @@
-async function init(email) {
+async function init() {
 
-    cliente = await validate(email, "cliente");
+    if(localStorage.getItem("usuario_email") && localStorage.getItem("usuario_id")){
+        id = localStorage.getItem("usuario_id");
+        let email = localStorage.getItem("usuario_email");
+        console.log("id => " + id + "\nemail => " + email);
+    }
+
+    cliente = await findData("cliente", id);
     console.log(cliente);
+    if(!cliente){
+        sair();
+    }
+
     personals = await Personals();
     geojson = await Geojson(personals);
 

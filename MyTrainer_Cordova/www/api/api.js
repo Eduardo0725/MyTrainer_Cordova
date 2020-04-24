@@ -1,3 +1,40 @@
+async function createUsuario(arquivo) {
+    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
+    var myHeaders = new Headers(httpHeaders);
+    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/create_usuario',
+        {
+            method: 'POST',
+            body: JSON.stringify(arquivo),
+            headers: myHeaders,
+            mode: 'cors',
+            cache: 'default',
+
+        }).then(response => {
+
+            if (!response.ok) {
+                throw new Error("HTTP error, status: " + response.status);
+            }
+
+            return response.json();
+        }).then(response => {
+            console.log(response);
+
+            if (response.erro) {
+                if (response.erro == "Esse email já existe.") {
+                    alert(response.erro);
+                    return false;
+                }
+                alert("Erro no banco de dados.");
+                return false;
+            }
+            return document.getElementById('form').submit();;
+        }).catch(erro => {
+            alert("Erro na requisição.");
+            console.error(erro);
+            return false;
+        });
+}
+
 async function findData(collection, id) {
     var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
     var myHeaders = new Headers(httpHeaders);

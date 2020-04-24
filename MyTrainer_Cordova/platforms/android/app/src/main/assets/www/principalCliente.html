@@ -4,27 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!--Firebase-->
-    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
-    <script src="database/firebase.js"></script>
-    <!--Firebase-->
-
     <script>
-        if(localStorage.getItem("usuario_email") && localStorage.getItem("usuario_id")){
-            email = localStorage.getItem("usuario_email");
-            let id = localStorage.getItem("usuario_id");
-            console.log("id => " + id + "\nemail => " + email);
+        function sair(){
+            localStorage.removeItem("usuario_id");
+            localStorage.removeItem("usuario_email");
+            localStorage.removeItem("usuario_tipo");
+            return redirect('index.html', 'post');
         }
     </script>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
-
-    <script src="api/api.js"></script>
-
-    <script src="js/main.js"></script>
 
     <script src="controller/geolocateMap.js"></script>
     <script src="controller/navigatorMap.js"></script>
@@ -39,6 +29,11 @@
     <script src="services/selectorMarker.js"></script>
 
     <script src="utils/redirect.js"></script>
+    <script src="utils/geojson.js"></script>
+
+    <script src="api/api.js"></script>
+
+    <script src="js/main.js"></script>
 
     <link type="text/css" rel="stylesheet" href="css/map.css">
 
@@ -47,7 +42,7 @@
     <title>Document</title>
 </head>
 
-<body onload="init(email)">
+<body onload="init()">
     <div id="corpo">
         <div id="barra">
             <a onclick="abrir_caixa()"><img src="img/nav.png" width="50px" height="50px" alt="icone"></a>
@@ -84,13 +79,6 @@
 
         function fechar_caixa() {
             document.getElementById('caixa').style.visibility = "hidden";
-        }
-
-        function sair(){
-            localStorage.removeItem("usuario_id");
-            localStorage.removeItem("usuario_email");
-            localStorage.removeItem("usuario_tipo");
-            return redirect('index.html', 'post');
         }
     </script>
     

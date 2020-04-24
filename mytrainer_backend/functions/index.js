@@ -51,13 +51,11 @@ exports.find_data = functions.https.onRequest((request, response) => {
     })
 });
 
-//Personal
-
-exports.create_personal = functions.https.onRequest((request, response) => {
+exports.create_usuario = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {
         let arquivo = request.body;
 
-        let result = await db.collection("personal").where("email", "==", arquivo.email).get()
+        let result = await db.collection(arquivo.tipo).where("email", "==", arquivo.doc.email).get()
             .then(doc => {
                 if (!doc.empty) {
                     return { erro: "Esse email já existe." };
@@ -65,50 +63,22 @@ exports.create_personal = functions.https.onRequest((request, response) => {
             }).catch(err => {
                 return { erro: "Erro ao cadastrar.", "err": err };
             });
-        
-        if(result){
+
+        if (result) {
             return response.json(result);
         }
 
-        await db.collection("personal").add({
-            "nome": arquivo.nome,
-            "sobrenome": arquivo.sobrenome,
-            "datanasc": arquivo.datanasc,
-            "rg": arquivo.rg,
-            "cpf": arquivo.cpf,
-            "phone": arquivo.phone,
-            "celular": arquivo.celular,
-            "cep": arquivo.cep,
-            "rua": arquivo.rua,
-            "numero": arquivo.numero,
-            "bairro": arquivo.bairro,
-            "complemento": arquivo.complemento,
-            "cidade": arquivo.cidade,
-            "estado": arquivo.estado,
-            "email": arquivo.email,
-            "senha": arquivo.senha,
-            "coords": {
-                "Latitude": 0,
-                "Longitude": 0,
-            },
-            "certificado": arquivo.certificado,
-            "foto": arquivo.foto,
-            "visto_por_ultimo": arquivo.visto_por_ultimo,
-            "criado": `
-                ${arquivo.visto_por_ultimo[0].dia}/${arquivo.visto_por_ultimo[0].mes}/${arquivo.visto_por_ultimo[0].ano} - 
-                ${arquivo.visto_por_ultimo[1].hora}:${arquivo.visto_por_ultimo[1].min}:${arquivo.visto_por_ultimo[1].seg}`,
-            "meus_treinos": [],
-            "bio": arquivo.bio,
-            "comentários": []
-        })
-        .then(() => { 
-            return response.json({ "sucesso": "Sucesso" }) 
-        })
-        .catch(() => { 
-            return response.json({ "erro": "Erro na conexão." }) 
-        })
+        await db.collection(arquivo.tipo).add(arquivo.doc)
+            .then(() => {
+                return response.json({ "sucesso": "Sucesso" })
+            })
+            .catch(() => {
+                return response.json({ "erro": "Erro na conexão." })
+            })
     })
 });
+
+//Personal
 
 exports.last_personal_coords = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {
@@ -147,55 +117,6 @@ exports.last_personal_access = functions.https.onRequest((request, response) => 
 })
 
 //Client
-
-exports.create_client = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
-        let arquivo = request.body;
-
-        let result = await db.collection("cliente").where("email", "==", arquivo.email).get()
-            .then(doc => {
-                if (!doc.empty) {
-                    return { erro: "Esse email já existe." };
-                }
-            }).catch(err => {
-                return { erro: "Erro ao cadastrar.", "err": err };
-            });
-        
-        if(result){
-            return response.json(result);
-        }
-
-        await db.collection("cliente").add({
-            "nome": arquivo.nome,
-            "sobrenome": arquivo.sobrenome,
-            "datanasc": arquivo.datanasc,
-            "phone": arquivo.phone,
-            "celular": arquivo.celular,
-            "cep": arquivo.cep,
-            "rua": arquivo.rua,
-            "numero": arquivo.numero,
-            "bairro": arquivo.bairro,
-            "complemento": arquivo.complemento,
-            "cidade": arquivo.cidade,
-            "estado": arquivo.estado,
-            "email": arquivo.email,
-            "senha": arquivo.senha,
-            "foto": arquivo.foto,
-            "meus_treinos": [],
-            "criado": `
-            ${arquivo.visto_por_ultimo[0].dia}/${arquivo.visto_por_ultimo[0].mes}/${arquivo.visto_por_ultimo[0].ano} - 
-            ${arquivo.visto_por_ultimo[1].hora}:${arquivo.visto_por_ultimo[1].min}:${arquivo.visto_por_ultimo[1].seg}
-            `,
-            "comentários": []
-        })
-        .then(() => { 
-            return response.json({ "sucesso": "Sucesso" }) 
-        })
-        .catch(() => { 
-            return response.json({ "erro": "Erro na conexão." }) 
-        })
-    })
-})
 
 exports.fetch_personals = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {

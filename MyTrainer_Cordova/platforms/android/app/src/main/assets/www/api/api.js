@@ -1,19 +1,121 @@
-async function validate(email, collection){
-    return await db.collection(collection).where("email","==",email).get()
-    .then(snapshot => {
-        if(snapshot.empty){
-            return false
-        }
-        var disponiveis;
-        snapshot.forEach((doc) => {
-            disponiveis = [doc.id, doc.data()];
-        })
-        return disponiveis;
-    });
+async function createUsuario(arquivo) {
+    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
+    var myHeaders = new Headers(httpHeaders);
+    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/create_usuario',
+        {
+            method: 'POST',
+            body: JSON.stringify(arquivo),
+            headers: myHeaders,
+            mode: 'cors',
+            cache: 'default',
+
+        }).then(response => {
+
+            if (!response.ok) {
+                throw new Error("HTTP error, status: " + response.status);
+            }
+
+            return response.json();
+        }).then(response => {
+            console.log(response);
+
+            if (response.erro) {
+                if (response.erro == "Esse email já existe.") {
+                    alert(response.erro);
+                    return false;
+                }
+                alert("Erro no banco de dados.");
+                return false;
+            }
+            return document.getElementById('form').submit();;
+        }).catch(erro => {
+            alert("Erro na requisição.");
+            console.error(erro);
+            return false;
+        });
 }
 
+async function findData(collection, id) {
+    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
+    var myHeaders = new Headers(httpHeaders);
+    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/find_data',
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                "id": id,
+                "collection": collection
+            }),
+            headers: myHeaders,
+            mode: 'cors',
+            cache: 'default',
+
+        }).then(response => {
+
+            if (!response.ok) {
+                throw new Error("HTTP error, status: " + response.status);
+            }
+
+            return response.json();
+        }).then(response => {
+            console.log(response);
+
+            if (response.erro) {
+                alert("Erro no banco de dados.")
+                return false
+            }
+
+            return response;
+        })
+        .catch(erro => {
+            alert("Erro na requisição.");
+            console.error(erro);
+            return false;
+        });
+}
+
+async function validate(collection, email, senha) {
+    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
+    var myHeaders = new Headers(httpHeaders);
+    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/validate_usuario',
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                "email": email,
+                "collection": collection,
+                "senha": senha
+            }),
+            headers: myHeaders,
+            mode: 'cors',
+            cache: 'default',
+
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error, status: " + response.status);
+            }
+            return response.json();
+        }).then(response => {
+            console.log(response);
+
+            if (response.erro == "Esse email não existe.") {
+                return false
+            }
+
+            if (response.erro == "Erro na conexão.") {
+                return "erro";
+            }
+
+            return response;
+        })
+        .catch(erro => {
+            alert("Erro na requisição");
+            console.error(erro);
+            return "erro";
+        });
+}
+
+
 async function Personals() {
-    let httpHeaders = { 'Content-Type' : 'application/json', 'Accept-Charset' : 'utf-8' };
+    let httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
     let myHeaders = new Headers(httpHeaders);
 
     data = new Date;
@@ -31,7 +133,7 @@ async function Personals() {
 
     let personals = await fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/fetch_personals', {
         method: 'POST',
-        body: JSON.stringify({ 
+        body: JSON.stringify({
             id: cliente[0],
             ultimo_acesso: visto_por_ultimo
         }),
@@ -42,34 +144,12 @@ async function Personals() {
         return response.json();
     }).then(response => {
         console.log(response);
+        if (response.vazio) {
+            return [];
+        }
         return response;
     })
 
     return personals;
 }
 
-function Geojson(coords) {
-    coordenada = [];
-    console.log("coords => "+coords)
-    coords.forEach(array => {
-        coordenada = [
-            ...coordenada,
-            {
-                'type': 'Feature',
-                'properties': {
-                    'avatar': array[1]['foto'],
-                    'nome': array[1]['nome'],
-                    'idade': '18',
-                    'tipo_de_treino': 'musculação',
-                    'bio': 'Professor de Educação Física, com pós-graduação em condicionamento físico para grupos especiais e reabilitação cardíaca. ... Depois de formado e com especialização em condicionamento físico para grupos especiais e reabilitação cardíaca, em 2008 trabalhou com aulas particulares e projetos específicos.',
-                },
-                'geometry': {
-                    'type': 'Point',
-                    'coordinates': [array[1].coords.Longitude, array[1].coords.Latitude]
-                }
-            },
-        ]
-    });
-    // console.log(coordenada)
-    return coordenada;
-}

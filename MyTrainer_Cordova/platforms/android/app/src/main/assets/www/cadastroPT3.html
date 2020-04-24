@@ -8,13 +8,10 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
-	<script type="text/javascript" src="database/firebase.js"></script>
 	<script src="api/api.js"></script>
+
 	<script type="text/javascript" src="utils/fomatting.js"></script>
-	<script type="text/javascript" src="utils/removeSpace.js"></script>
+	<script type="text/javascript" src="utils/addSpace.js"></script>
 
 	<title> Colaborador | Dados de Login </title>
 	<link rel="stylesheet" type="text/css" href="css/cadPT3.css">
@@ -35,7 +32,10 @@
 		}
 	</style>
 	<script>
-		db = firebase.firestore();
+
+		foto = "";
+		certificado = "";
+
 		uri = decodeURIComponent(document.documentURI);
 		info = formatting(uri, [
 			"pt1",
@@ -51,7 +51,7 @@
 		pt1 = info[0].split(",");
 		info.splice(0, 1);
 		info = [...pt1, ...info];
-		info = removeSpace(info);
+		info = addSpace(info);
 
 		//verificando campos
 		async function validarCampos() {
@@ -67,75 +67,70 @@
 				return alert("As senhas devem ser iguais!");
 			}
 
-			await validate(user, "personal").then(validate => {
-				if (!validate) {
-					data = new Date;
-					let visto_por_ultimo = [
-						{
-							dia: data.getDate(),
-							mes: data.getMonth() + 1,
-							ano: data.getFullYear()
-						},
-						{
-							hora: data.getHours(),
-							min: data.getMinutes(),
-							seg: data.getSeconds(),
-						}
-					];
-					return save(user, senha, visto_por_ultimo);
+			data = new Date;
+			let visto_por_ultimo = [
+				{
+					dia: data.getDate(),
+					mes: data.getMonth() + 1,
+					ano: data.getFullYear()
+				},
+				{
+					hora: data.getHours(),
+					min: data.getMinutes(),
+					seg: data.getSeconds(),
 				}
-				return alert("Esse email já existe.");
+			];
+
+			return createUsuario({
+				"tipo": "personal",
+				"doc": {
+					"nome": info[0],
+					"sobrenome": info[1],
+					"datanasc": info[2],
+					"rg": info[3],
+					"cpf": info[4],
+					"phone": info[5],
+					"celular": info[6],
+					"cep": info[7],
+					"rua": info[8],
+					"numero": info[9],
+					"bairro": info[10],
+					"complemento": info[11],
+					"cidade": info[12],
+					"estado": info[13],
+					"email": user,
+					"senha": senha,
+					"coords": {
+						"Latitude": 0,
+						"Longitude": 0,
+					},
+					"certificado": certificado,
+					"foto": foto,
+					"visto_por_ultimo": visto_por_ultimo,
+					"criado": `
+						${visto_por_ultimo[0].dia}/${visto_por_ultimo[0].mes}/${visto_por_ultimo[0].ano} - 
+						${visto_por_ultimo[1].hora}:${visto_por_ultimo[1].min}:${visto_por_ultimo[1].seg}
+					`,
+					"meus_treinos": [],
+					"bio": "",
+					"comentários": []
+				}
 			});
 		}
-		async function save(user, senha, visto_por_ultimo) {
-			await db.collection("personal").add({
-				"nome": info[0],
-				"sobrenome": info[1],
-				"datanasc": info[2],
-				"rg" : info[3],
-				"cpf" : info[4],
-				"phone": info[5],
-				"celular": info[6],
-				"cep": info[7],
-				"rua": info[8],
-				"numero": info[9],
-				"bairro": info[10],
-				"complemento": info[11],
-				"cidade": info[12],
-				"estado": info[13],
-				"email": user,
-				"senha": senha,
-				"coords": {
-					"Latitude": 0,
-					"Longitude": 0,
-				},
-				"certificado": certificado,
-				"foto": foto,
-				"visto_por_ultimo" : visto_por_ultimo,
-				"meus_treinos": []
-			}).then(() => {
-				return document.getElementById('form').submit();
-			}).catch(err => {
-				return alert("Erro no cadastro, tente novamente mais tarde.");
-			})
-		}
 
-		var foto = "";
-		var certificado = "";
-
-	    function openFile(event, img) {
+		function openFile(event, img) {
 			var input = event.target;
-		
+
 			var reader = new FileReader();
-			
+
 			reader.readAsDataURL(input.files[0]);
-			
-			reader.onload = function(){
+
+			reader.onload = function () {
 				var dataURL = reader.result;
 				console.log(dataURL)
 				var output = document.getElementById(img);
 				output.src = dataURL;
-				if(img == "img_perfil"){
+				if (img == "img_perfil") {
 					return foto = dataURL;
 				}
 				return certificado = dataURL;
@@ -154,31 +149,31 @@
 		<hr>
 		<center>
 			<form id="form" action="./loginPT.html" method="POST"></form>
-				<h3>Email: </h3>
-				<input type="text" id="user" placeholder="  ex: exemplo@email.com" size="60"> *</input><br /><br />
-				<h3>Senha: </h3>
-				<input type="password" id="senha" placeholder="  ********" size="30"> *</input><br /><br />
-				<h3>Confirme sua senha: </h3>
-				<input type="password" id="confsenha" placeholder="  ********" size="30"> *
-				<hr><br>
-				<p> Insira sua foto de perfil: * </p>
-				<br>
-				<input type="file" id="perfil" accept="image/*" onchange="openFile(event,'img_perfil')" capture/>
-				<img id='img_perfil' width="150px" height="150px"><br>
-				<hr><br>
-				<p> Para confirmarmos que você é um profissional autenticado, precisamos
-					<br> de uma foto do seu certificado.<br> Por favor, insira a imagem abaixo: </p>
-				<br>
-				<input type="file" id="certificado" accept="image/*" onchange="openFile(event,'img_certificado')" capture/>
-				<img id='img_certificado' width="200px" height="150px"><br>
-				<br><br>
-				<hr><br>
-				<a onclick="validarCampos()" id="cadastro">
-					<div class="link0">Cadastrar</div>
-				</a> ou
-				<a href="loginPT.html">
-					<div class="link1">Logue-se</div>
-				</a>
+			<h3>Email: </h3>
+			<input type="text" id="user" placeholder="  ex: exemplo@email.com" size="60"> *</input><br /><br />
+			<h3>Senha: </h3>
+			<input type="password" id="senha" placeholder="  ********" size="30"> *</input><br /><br />
+			<h3>Confirme sua senha: </h3>
+			<input type="password" id="confsenha" placeholder="  ********" size="30"> *
+			<hr><br>
+			<p> Insira sua foto de perfil: * </p>
+			<br>
+			<input type="file" id="perfil" accept="image/*" onchange="openFile(event,'img_perfil')" capture />
+			<img id='img_perfil' width="150px" height="150px"><br>
+			<hr><br>
+			<p> Para confirmarmos que você é um profissional autenticado, precisamos
+				<br> de uma foto do seu certificado.<br> Por favor, insira a imagem abaixo: </p>
+			<br>
+			<input type="file" id="certificado" accept="image/*" onchange="openFile(event,'img_certificado')" capture />
+			<img id='img_certificado' width="200px" height="150px"><br>
+			<br><br>
+			<hr><br>
+			<a onclick="validarCampos()" id="cadastro">
+				<div class="link0">Cadastrar</div>
+			</a> ou
+			<a href="loginPT.html">
+				<div class="link1">Logue-se</div>
+			</a>
 		</center><br>
 	</div>
 
@@ -194,7 +189,7 @@
 		</center>
 	</header>
 
-	
+
 </body>
 
 </html>

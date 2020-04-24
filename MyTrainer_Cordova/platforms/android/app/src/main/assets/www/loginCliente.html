@@ -9,15 +9,11 @@
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 	<title> Login </title>
 
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
-	<script type="text/javascript" src="database/firebase.js"></script>
+	<script src="api/api.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="css/logCliente.css">
 	<script>
 		//verificando campos
-		db = firebase.firestore();
 		var loading = false;
 
 		async function login() {
@@ -36,52 +32,30 @@
 				return loading = false;
 			}
 
-			await db.collection("cliente").where("email", "==", user).get()
-				.then(querySnapshot => {
-					if (querySnapshot.empty) {
-						validate = false;
-						return validate;
-					}
+			await validate("cliente", user, pass).then(validation => {
 
-					querySnapshot.forEach(doc => {
-						validate = [doc.id, doc.data()];
-						return validate;
-					});
-				})
-				.catch(err => {
-					alert("Erro na requisição. Erro: " + err);
-					return validate = "erro";
-				})
-				.finally(() => {
-
-					if (validate == "erro") {
-						return loading = false;
-					}
-
-					if (!validate) {
-						alert("validate vazio");
-						document.getElementById("email").value = "";
-						document.getElementById("senha").value = "";
-						return loading = false;
-					}
-
-					if (validate[1].senha == pass) {
-						localStorage.setItem('usuario_id', validate[0]);
-						localStorage.setItem('usuario_email', validate[1].email);
-						localStorage.setItem('usuario_tipo', 1);
-						return document.getElementById('form').submit();
-					}
-					else {
-						document.getElementById("email").value = "";
-						document.getElementById("senha").value = "";
-						alert("Email ou Senha incorretos");
-						return loading = false;
-					}
-
-					alert("Erro na validação.");
+				if (validation == "erro") {
+					alert('Erro na conexão');
 					return loading = false;
 				}
-			)
+
+				if (!validation) {
+					alert("Email ou senha incorretos");
+					document.getElementById("email").value = "";
+					document.getElementById("senha").value = "";
+					return loading = false;
+				}
+
+				if (validation.email) {
+					localStorage.setItem('usuario_id', validation.id);
+					localStorage.setItem('usuario_email', validation.email);
+					localStorage.setItem('usuario_tipo', 1);
+					return document.getElementById('form').submit();
+				}
+				
+				alert("Erro ao executar a validação.");
+				return loading = false;
+			});
 		}
 	</script>
 	<style>
