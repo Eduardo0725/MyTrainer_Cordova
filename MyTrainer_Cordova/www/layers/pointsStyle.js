@@ -1,11 +1,11 @@
 function pointsStyle(layers, map) {
     return map.addLayer({
-        id: 'points',
-        source: 'pointsSources',
-        type: 'circle',
-        paint: {
-            'circle-radius': 10,
-            'circle-color': 'black'
+        id: 'points', //O id da camada
+        source: 'pointsSources', //O id da fonte a ser usada
+        type: 'circle', //O tipo da camada
+        paint: { //O estilo
+            'circle-radius': 10, //Tamanho
+            'circle-color': 'black' //Cor
         }
     });
 }

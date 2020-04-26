@@ -1,3 +1,4 @@
+//Adicionar um marcador personalizado com uma foto do personal numa coordenada especifica.
 function personalMarker(map){
     return coordenada.forEach(function (marker, index) {
 

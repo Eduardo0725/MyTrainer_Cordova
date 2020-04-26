@@ -5,17 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script>
+        //A função "sair()" apaga as variáveis (itens) que tem as informações do usuario e sai da página principal para a página inicial.
         function sair(){
             localStorage.removeItem("usuario_id");
             localStorage.removeItem("usuario_email");
             localStorage.removeItem("usuario_tipo");
+            
+            //O a função "redirect(action, method)" apenas cria um form vazio para poder trocar de página.
             return redirect('index.html', 'post');
         }
     </script>
 
+    <!--Mapbox-->
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
-
+    <!--Mapbox-->
+    
     <script src="controller/geolocateMap.js"></script>
     <script src="controller/navigatorMap.js"></script>
 
@@ -27,6 +32,7 @@
     <script src="services/personalMarker.js"></script>
     <script src="services/personalPopup.js"></script>
     <script src="services/selectorMarker.js"></script>
+    <script src="./services/pageDetail.js"></script>
 
     <script src="utils/redirect.js"></script>
     <script src="utils/geojson.js"></script>
@@ -69,14 +75,17 @@
     <div id='principal'></div>
 
     <script>
+        //Ativa o botão de geolocalização depois de um determinado tempo.
         setTimeout(()=>{
             document.querySelector('button.mapboxgl-ctrl-geolocate').click();
         },5000)
 
+        //Abre a caixa de opções.
         function abrir_caixa() {
             document.getElementById('caixa').style.visibility = "visible";
         }
 
+        //Fecha a caixa de opções.
         function fechar_caixa() {
             document.getElementById('caixa').style.visibility = "hidden";
         }

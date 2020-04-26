@@ -37,7 +37,11 @@
 	</header>
 
 	<script>
+		//Se no "localStorage" do dispositivo tiver o informações do usuário, é redirecionado automaticamente para a pagina principal.
 		if(localStorage.getItem("usuario_tipo")){
+
+			//Se o tipo do usuario for igual a "1" (cliente) então é direcionado para a pagina do cliente.
+			//senão é redirecionado para a pagina do personal.
 			if(localStorage.getItem("usuario_tipo") == 1){
 				redirect('principalCliente.html', 'post');
 			}else{

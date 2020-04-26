@@ -14,49 +14,62 @@
 	<link rel="stylesheet" type="text/css" href="css/loginPT.css">
 	<script>
 		//verificando campos
-		var loading = false;
 
-		async function login() {
+			//A variavel "loading" serve para não repetir a função que ainda esta processando as informações.
+			//Usado caso do usuario clicar mais de uma vez no mesmo botão.
+			var loading = false;
 
-			if (loading) {
-				return;
-			}
+			//A função "login()" serve para verificar se existe o email, se a senha está correta.
+			async function login() {
 
-			loading = true;
+				//Caso o "loading" seja "true" quer dizer que essa função ainda está em andamento,
+				//então vai interromper usando "return" para não ter mais de uma função processando.
+				if (loading) {
+					return
+				}
 
-			var user = document.getElementById("email").value;
-			var pass = document.getElementById("senha").value;
+				loading = true;
 
-			if (user == "" || pass == "") {
-				alert("Email ou Senha Inválidos");
-				return loading = false;
-			}
+				var user = document.getElementById("email").value;
+				var pass = document.getElementById("senha").value;
 
-			await validate("personal", user, pass).then(validation => {
-
-				if (validation == "erro") {
-					alert('Erro na conexão');
+				//Caso um dos campos não sejam preenchidos vai cancelar o procedimento.
+				if (user == "" || pass == "") {
+					alert("Email ou Senha Inválidos");
 					return loading = false;
 				}
 
-				if (!validation) {
-					alert("Email ou senha incorretos");
-					document.getElementById("email").value = "";
-					document.getElementById("senha").value = "";
+				//Vai aguardar ("await") o processo de validação terminar e os valores retornados serão passados para a variável "validation".
+				await validate("personal", user, pass).then(validation => {
+
+					//Caso "validation" tenha o valor "erro" quer dizer que ouve um erro na conexão do app com o servidor ou do servidor com o banco de dados.
+					if (validation == "erro") {
+						alert('Erro na conexão');
+						return loading = false;
+					}
+
+					//Caso "validation" tenha o valor "false" quer dizer que não encontrou o email solicitado ou a senha esta errada.
+					if (!validation) {
+						alert("Email ou senha incorretos");
+						document.getElementById("email").value = "";
+						document.getElementById("senha").value = "";
+						return loading = false;
+					}
+
+					//Caso "validation" tenha a propriedade "email", armazenha as informações do usuario no dispositivo ("localStorage") e muda para a página de login.
+					if (validation.email) {
+						localStorage.setItem('usuario_id', validation.id);
+						localStorage.setItem('usuario_email', validation.email);
+						localStorage.setItem('usuario_tipo', 0); //Cria uma variável "usuario_tipo" com o valor do tipo do usuario. obs: Personal = 0, cliente = 1.
+						return document.getElementById('form').submit();
+					}
+
+
+					//Caso "validation" não tenha a propriedade "email" ou valor "false" ou "erro", quer dizer que tem algum erro na estrutura do sistema.
+					alert("Erro ao executar a validação.");
 					return loading = false;
-				}
-
-				if (validation.email) {
-					localStorage.setItem('usuario_id', validation.id);
-					localStorage.setItem('usuario_email', validation.email);
-					localStorage.setItem('usuario_tipo', 0);
-					return document.getElementById('form').submit();
-				}
-
-				alert("Erro ao executar a validação.");
-				return loading = false;
-			});
-		}
+				});
+			}
 	</script>
 	<style>
 		body {

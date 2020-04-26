@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon"/>
+	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
 	<meta charset="UTF-8">
 	<meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
+	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-	
+
 	<script type="text/javascript" src="utils/fomatting.js"></script>
 
 	<title> Colaborador | Localização </title>
 	<link rel="stylesheet" type="text/css" href="css/cadPT2.css">
 	<style>
-	body{background: url("img/fundo4.jpg") no-repeat fixed; background-size: 100%;}
-	hr{border: 1px solid #000;}
-	h4,h5{position: relative; left: 5px;}
+		body {
+			background: url("img/fundo4.jpg") no-repeat fixed;
+			background-size: 100%;
+		}
+
+		hr {
+			border: 1px solid #000;
+		}
+
+		h4,
+		h5 {
+			position: relative;
+			left: 5px;
+		}
 	</style>
 	<script>
-	//verificando campos
-		function validarCampos(){
+		//verificando campos
+		function validarCampos() {
 			var cep = document.getElementById("cep").value;
 			var rua = document.getElementById("rua").value;
 			var numero = document.getElementById("numero").value;
@@ -26,25 +38,29 @@
 			var complemento = document.getElementById("complemento").value;
 			var cidade = document.getElementById("cidade").value;
 			var estado = document.getElementById("estado").value;
-			
-			if(cep=="" || rua=="" || numero=="" || bairro=="" || cidade=="" || estado==""){
+
+			if (cep == "" || rua == "" || numero == "" || bairro == "" || cidade == "" || estado == "") {
 				return alert("Por favor, preencha todos os campos!");
 			}
 
-			complemento = (!complemento)? document.getElementById("complemento").value = 0 : complemento;
+			//Se a variável "complemento" for vazio o valor vai ser zero.
+			complemento = (!complemento) ? document.getElementById("complemento").value = 0 : complemento;
 
+			//Vai pegar a url, decodificá-la e passar para a variável "uri".
 			uri = decodeURIComponent(document.documentURI);
-			
+
+			//A função "formatting(url, array)" vai procurar na url as propriedades que estão no array e retorna seus valores para a variável "info".
 			info = formatting(uri, [
-			"nome",
-			"sobrenome",
-			"datanasc",
-			"rg",
-			"cpf",
-			"phone",
-			"celular"
+				"nome",
+				"sobrenome",
+				"datanasc",
+				"rg",
+				"cpf",
+				"phone",
+				"celular"
 			]);
-			
+
+			//Vai colocar os valores do "info" no input com o id "pt1".
 			document.getElementById("pt1").value = info;
 
 			document.getElementById("form").submit();
@@ -52,39 +68,51 @@
 	</script>
 </head>
 
-<body> 
+<body>
 	<div class="formulario">
-		<center><h2> Ainda não tem conta? <br> Trabalhe Conosco! </h2></center>
+		<center>
+			<h2> Ainda não tem conta? <br> Trabalhe Conosco! </h2>
+		</center>
 		<hr>
-			<h4> Localização </h4>
+		<h4> Localização </h4>
 		<hr>
 		<form id="form" action="./cadastroPT3.html" method="get">
 			<input type="hidden" name="pt1" id="pt1">
 			<h5>CEP:
-			<input type="text" name="cep" id="cep" placeholder="  ex: 12345-789" size="15"> * </h5>
+				<input type="text" name="cep" id="cep" placeholder="  ex: 12345-789" size="15"> * </h5>
 			<h5>Rua:
-			<input type="text" name="rua" id="rua" placeholder="  ex: Rua dos bobos" size="50"> *
-			N°:
-			<input type="text" name="numero" id="numero" placeholder="  ex: 000" size="3"> * </h5>
+				<input type="text" name="rua" id="rua" placeholder="  ex: Rua dos bobos" size="50"> *
+				N°:
+				<input type="text" name="numero" id="numero" placeholder="  ex: 000" size="3"> * </h5>
 			<h5>Bairro:
-			<input type="text" name="bairro" id="bairro" placeholder="  ex: Itaquera" size="44"> *
-			Compl:
-			<input type="text" name="complemento" id="complemento" placeholder="  ex: A5" size="3"></h5>
+				<input type="text" name="bairro" id="bairro" placeholder="  ex: Itaquera" size="44"> *
+				Compl:
+				<input type="text" name="complemento" id="complemento" placeholder="  ex: A5" size="3"></h5>
 			<h5>Cidade:
-			<input type="text" name="cidade" id="cidade" placeholder="  ex: São Paulo" size="28"> *
-			<h5>Estado:
-			<input type="text" name="estado" id="estado" placeholder="  ex: São Paulo" size="18"> * </h5><hr><br>
-			<center><a onclick="validarCampos()" id="cadastro"><div class="link0">Próximo</div></a> ou 
-			<a href="loginPT.html"><div class="link1">Logue-se</div></a></center><br>
+				<input type="text" name="cidade" id="cidade" placeholder="  ex: São Paulo" size="28"> *
+				<h5>Estado:
+					<input type="text" name="estado" id="estado" placeholder="  ex: São Paulo" size="18"> * </h5>
+				<hr><br>
+				<center><a onclick="validarCampos()" id="cadastro">
+						<div class="link0">Próximo</div>
+					</a> ou
+					<a href="loginPT.html">
+						<div class="link1">Logue-se</div>
+					</a></center><br>
 		</form>
 	</div>
-	
+
 	<header>
 		<center><img src="img/logo4.png" height="60px" width="60px"></center>
-		<a href="cadastroPT.html"><div class="voltar"><img src="img/voltar.png" height="25px" width="25px"></img></div></a>
-		<center><div class="colaborador">
-			COLABORADOR
-		</div></center>
+		<a href="cadastroPT.html">
+			<div class="voltar"><img src="img/voltar.png" height="25px" width="25px"></img></div>
+		</a>
+		<center>
+			<div class="colaborador">
+				COLABORADOR
+			</div>
+		</center>
 	</header>
 </body>
+
 </html>

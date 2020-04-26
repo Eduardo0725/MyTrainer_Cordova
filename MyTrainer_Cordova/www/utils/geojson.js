@@ -1,17 +1,21 @@
+//Faz a formatação do geojson.
 function Geojson(coords) {
-    coordenada = [];
+    
+    //A variável "dataGeojson" vai pegar as informações formatadas.
+    dataGeojson = [];
     console.log("coords => " + coords)
+    
     coords.forEach(array => {
-        coordenada = [
-            ...coordenada,
+        dataGeojson = [
+            ...dataGeojson,
             {
                 'type': 'Feature',
                 'properties': {
                     'avatar': array[1]['foto'],
-                    'nome': array[1]['nome'],
+                    'nome': `${array[1]['nome']} ${array[1]['sobrenome']}`,
                     'idade': '18',
                     'tipo_de_treino': 'musculação',
-                    'bio': 'Professor de Educação Física, com pós-graduação em condicionamento físico para grupos especiais e reabilitação cardíaca. ... Depois de formado e com especialização em condicionamento físico para grupos especiais e reabilitação cardíaca, em 2008 trabalhou com aulas particulares e projetos específicos.',
+                    'bio': (array[1]['bio']) ? array[1]['bio'] : " ",
                 },
                 'geometry': {
                     'type': 'Point',
@@ -20,6 +24,6 @@ function Geojson(coords) {
             },
         ]
     });
-    // console.log(coordenada)
-    return coordenada;
+    // console.log(dataGeojson)
+    return dataGeojson;
 }
