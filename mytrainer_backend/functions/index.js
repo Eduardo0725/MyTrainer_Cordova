@@ -69,6 +69,9 @@ exports.find_data = functions.https.onRequest((request, response) => {
                 let usuario = [doc.id, doc.data()];
                 return response.json(usuario);
             })
+            .catch(erro => {
+                return response.json({ "erro": erro})
+            })
     })
 });
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon"/>
 	<meta charset="UTF-8">
@@ -8,76 +9,61 @@
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 	<title> Meus Treinos </title>
 	<link rel="stylesheet" type="text/css" href="css/meustreinosCliente.css">
-	<style>
-	body{background-color: #fff;}
-	</style>
-	
-	<script>
-		function verificaTreinos(){
-			var treinos = 0;
-			
-			if (treinos == 0){
-				document.getElementById("comtreinos").style.display = "none";
-				return true;
-			}
-			else {
-				document.getElementById("semtreinos").style.display = "none";
-				return true;
-			}
-		}
-	</script>
-	
+	<link rel="stylesheet" type="text/css" href="css/box.css">
+
 </head>
 
-<body> 
-	<div id="comtreinos">
-		<div id="treino">
-			<div id="imagem">
-				<img src="img/perfil.png" height="60px" width="60px"></img>
-			</div>
-		
-			<div id="dados">
-				<p> 
-				Nome:___________________Idade:__ 	<br>
-				Endereço:_______________________	<br>
-				Situação:_______________			<br>
-				Início:__/__/_________Horário:__:__	<br>
-				</p>
+<body>
+
+	<div id="page">
+		<header>
+			<a>
+				<img src="img/nav.png" width="30px" height="30px" alt="icone">
+			</a>
+			<h1>MEUS TREINOS</h1>
+		</header>
+
+		<div id="lista">
+			<li>
+				<div class="treino">
+					<div>
+						<p>Musculação</p>
+						<p>dd/mm/YYYY</p>
+					</div>
+					<p>Por: nome do personal.</p>
+				</div>
+				<a href="#"><img src="./img/awesome-trash-alt@2x.png" alt="menu"></a>
+			</li>
+			<li>
+				<div class="treino">
+					<div>
+						<p>Musculação</p>
+						<p>dd/mm/YYYY</p>
+					</div>
+					<p>Por: nome do personal.</p>
+				</div>
+				<a href="#"><img src="./img/awesome-trash-alt@2x.png" alt="delete"></a>
+			</li>
+		</div>
+
+		<div class="box hide">
+			<a id="close" href="#"><img src="img/fechar.png" alt="close"></a>
+			<div class="content">
+				<a href="#"><img src="img/perfil.png" alt="perfil"></a>
+				<div id="links">
+					<a href="PrincipalCliente.html">Pesquisar Treiners</a>
+					<a href="meustreinosCliente.html">Meus Treinos</a>
+					<a href="meuperfilCliente.html">Meu Perfil</a>
+					<a href="cadastroPT.html">Trabalhe Conosco</a>
+					<a href="index.html">Sair</a>
+					<img src="img/logo.png">
+					<h4>Versão 1.0</h4>
+				</div>
 			</div>
 		</div>
 	</div>
-	
-	<div id="semtreinos">
-		<br><br><br><br><br><br><br><br><br><br><br><br>
-		<center><h2>Você ainda não possuí treinos!</h2>
-	</div>
-		
-	<div class="links">
-		<a href="https://www.facebook.com/mytrainercompany"><div class="facebook"><img src="img/facebook.png" height="30px" width="30px"></img></div></a>
-		<a href="https://www.instagram.com/mytrainercompany"><div class="instagram"><img src="img/instagram.png" height="30px" width="30px"></img></div></a>
-		<a href="https://www.twitter.com/MytrainerC"><div class="twitter"><img src="img/twitter.png" height="30px" width="30px"></img></div></a>
-		<a href="https://www.youtube.com/channel/UCiqNMo1TbwUFyEG7863QAJA?view_as=subscriber"><div class="youtube"><img src="img/youtube.png" height="45px" width="45px"></img></div></a>
-	</div>
-	
-	<header>
-		<center><h1><b>MEUS TREINOS<b></h1></center>
-		<input type="checkbox" id="check">
-		<label id="icone" for="check"><img src="img/nav.png" width="30px" height="30px" alt="icone"></label>
-		<div class="barra">
-			<label id="icone2" for="check"><img src="img/fechar.png" width="40px" height="40px" alt="icone2"></label>
-			<br>
-			<center><a href=""><center><img src="img/perfil.png" height="110px" width="110px"></img></a>
-			<nav>
-				<a href="PrincipalCliente.html"><div class="link"><br>Pesquisar Treiners</div></a>
-				<a href="meustreinosCliente.html"><div class="link"><br>Meus Treinos</div></a>
-				<a href="meuperfilCliente.html"><div class="link"><br>Meu Perfil</div></a>
-				<a href="cadastroPT.html"><div class="link"><br>Trabalhe Conosco</div></a>
-				<a href="index.html"><div class="link"><br>Sair</div></a><br>
-				<img src="img/logo.png" height="60px" width="60px"></img>
-				<h4>Versão 1.0</h4>
-			</nav>
-			</center>
-		</div>
-	</header>
+
+
 </body>
+
 </html>
