@@ -1,226 +1,265 @@
 const corsModule = require('cors');
 const functions = require('firebase-functions');
-
 const admin = require('firebase-admin');
+const MyTrainer = require('./MyTrainer');
+
 admin.initializeApp();
 
 const db = admin.firestore();
+db.settings({ ignoreUndefinedProperties: true });
 
-const cors = corsModule({
-    //O "origin" escolhe quais origens tem permissão para fazer a solicitação. 
-    //Se for "true" qualquer origem pode fazer a soicitação, 
-    //caso uma origem especifica pode fazer a solicitação, será colocado uma string com o nome da origem, ex: "http://example.com/user".
+const corsGet = corsModule({
     origin: true,
-
-    //O "methods" é os métodos utilizados pelo servidor.
-    methods: ['GET', 'PUT', 'POST']
+    methods: ['GET']
+});
+const corsPost = corsModule({
+    origin: true,
+    methods: ['POST']
+});
+const corsPut = corsModule({
+    origin: true,
+    methods: ['PUT']
+});
+const corsDelete = corsModule({
+    origin: true,
+    methods: ['DELETE']
 });
 
-//Ambos
+//Users
 
-//O "validate_usuario" vai verificar se o email existe e se a senha esta correta.
-exports.validate_usuario = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
+exports.create_user = functions.https.onRequest((request, response) => {
+    corsPost(request, response, async () => {
 
-        //A variável "arquivo" vai pegar o body na requisição.
-        let arquivo = request.body;
+        let file = request.body;
+        let myTrainerClass = MyTrainer;
 
-        //Vai acessar o banco de dados na coleção especificada na propriedade "arquivo.collection",
-        //e vai procurar quais documentos tem a propriedade "email" com o valor do "arquivo.email" e vai traze-lo. 
-        await db.collection(arquivo.collection).where("email", "==", arquivo.email).get()
-            .then(snapshot => { //Caso a conexão com o banco de dados for bem sucedida, vai trazer o resultado para a variável "snapshot".
+        let docs = await myTrainerClass.getUserEmail(db, file.typeUser, file.doc.email);
 
-                //Caso o "snapshot" for vazio vai retornar uma resposta em formato json com uma mensagem de erro
-                if (snapshot.empty) {
-                    return response.json({ "erro": "Esse email não existe." });
+        let res;
+        switch (docs.status) {
+            // Criar
+            case "empty":
+                res = await myTrainerClass.createUser(db, file.typeUser, file.doc);
+
+                if (res.status == "err")
+                    return response.json(res);
+
+                res = {
+                    status: 200,
+                    doc: res
                 }
+                break;
 
-                let disponiveis;
+            // Interrompe, já existe.
+            case "ok":
+                res = { status: false };
+                break;
 
-                //O ".forEach()" vai percorrer a cada index do snapshot e passá-la para a variável "doc", 
-                //cada index é um documento encontrado, mas como os emails do banco de dados são todos diferentes, vai ter somente um documento (index)
-                snapshot.forEach((doc) => {
-                    //Caso a senha da solicitação seja igual a senha do documento, vai retornar o id do documento e o email do usuario para o "disponiveis", senão vai retorna "false" para o "disponiveis"
-                    disponiveis = (doc.data().senha == arquivo.senha) ? {
-                        "id": doc.id,
-                        "email": doc.data().email
-                    } : false;
-                });
+            // Interrompe, erro 502.
+            case "err":
+                res = { status: 502 };
+                break;
 
-                //Agora é retornado o "disponiveis" como resposta em formato json.
-                return response.json(disponiveis);
-            })
-            .catch(() => { //Caso a conexão com o banco for mal sucedida vai retornar uma mensagem de erro como resposta em formato json.
-                return response.json({ "erro": "Erro na conexão." });
-            });
+            // Interrompe, erro 500.
+            default:
+                res = { status: 500 };
+        }
+        return response.json(res);
     })
 });
 
-//O "find_data" procura o documento, se achar envia as informações devolta, senão retorna "false".
-exports.find_data = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
-        let arquivo = request.body;
+exports.validate_user = functions.https.onRequest((request, response) => {
+    corsPost(request, response, async () => {
 
-        await db.collection(arquivo.collection).doc(arquivo.id).get()
-            .then(doc => {
-                if (!doc.exists) {
-                    return false;
+        let file = request.body;
+        let myTrainerClass = MyTrainer;
+
+        let user = await myTrainerClass.getUserEmail(db, file.collection, file.email, true);
+
+        let res;
+        switch (user.status) {
+            // Se existir, verifica a senha.
+            case "ok":
+                if (file.password === user.docs.doc.password) {
+                    res = {
+                        status: 200,
+                        docs: user.docs
+                    }
+                } else {
+                    res = { status: false }
                 }
-                let usuario = [doc.id, doc.data()];
-                return response.json(usuario);
-            })
-            .catch(erro => {
-                return response.json({ "erro": erro})
-            })
-    })
-});
+                break;
 
-//O "create_usuario" vai criar a conta do usuario.
-exports.create_usuario = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
+            // Se não existir retorna false.
+            case "empty":
+                res = { status: false }
+                break;
 
-        //A variável "arquivo" vai pegar o body na requisição.
-        let arquivo = request.body;
+            case "err":
+                res = { status: 502 }
+                break;
 
-        //Vai acessar o banco de dados na coleção especificada na propriedade "arquivo.tipo",
-        //e vai procurar quais documentos tem a propriedade "email" com o valor do "arquivo.doc.email" e vai traze-lo.
-        let result = await db.collection(arquivo.tipo).where("email", "==", arquivo.doc.email).get()
-            .then(doc => { //Caso a conexão com o banco de dados for bem sucedida, vai trazer o resultado para a variável "doc".
-                
-                //Caso o "doc" não for vazio vai retornar um objeto com uma mensagem de erro, escrito que já existe esse email.
-                if (!doc.empty) {
-                    return { erro: "Esse email já existe." };
-                }
-    
-            }).catch(() => {  //Caso a conexão com o banco for mal sucedida vai retornar um objeto com uma mensagem de erro, escrito que ouve um erro na conexão.
-                return { "erro": "Erro na conexão." };
-            });
-
-        //Se a variável "result" tiver alguma informação, ele será retornado como uma resposta em formato json.
-        if (result) {
-            return response.json(result);
+            default:
+                res = { status: 500 };
         }
 
-        //Se o "result" for vazio,
-        //vai acessar o banco de dados na coleção especificada na propriedade "arquivo.tipo",
-        //e vai adicionar um documento na coleção usando o objeto "arquivo.doc".
-        await db.collection(arquivo.tipo).add(arquivo.doc)
-            .then(() => { //Caso a conexão com o banco de dados for bem sucedida, vai enviar uma resposta em json com uma mensagem de sucesso.
-                
-                return response.json({ "sucesso": "Sucesso" })
-            })
-            .catch(() => { //Caso a conexão com o banco de dados for mal sucedida, vai enviar uma resposta em json com uma mensagem de erro.
-                return response.json({ "erro": "Erro na conexão." })
-            })
+        return response.json(res);
     })
+});
+
+exports.get_data = functions.https.onRequest((request, response) => {
+    corsPost(request, response, async () => {
+        let file = request.body;
+        let myTrainerClass = MyTrainer;
+
+        let user = await myTrainerClass.getUserId(db, file.collection, file.id, true);
+
+        let res;
+        switch (user.status) {
+            // Se existir, verifica a senha.
+            case "ok":
+                res = {
+                    status: 200,
+                    doc: user.docs
+                }
+                break;
+
+            // Se não existir retorna false.
+            case "empty":
+                res = { status: false }
+                break;
+
+            case "err":
+                res = { status: 502 }
+                break;
+
+            default:
+                res = { status: 500 };
+        }
+
+        return response.json(res);
+    });
 });
 
 //Personal
 
-//O "last_personal_coords" procura o documento e atualiza as coordenadas do usuario.
-exports.last_personal_coords = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
-        let arquivo = request.body;
+exports.user_last_seen = functions.https.onRequest((request, response) => {
+    corsPut(request, response, async () => {
+        let file = request.body;
+        let myTrainerClass = MyTrainer;
 
-        await db.collection("personal").doc(arquivo.id)
-            .update({
-                coords: {
-                    Latitude: arquivo.latitude,
-                    Longitude: arquivo.longitude
-                }
-            })
-            .then(() => { return response.json({ "pronto": "pronto" }); })
-            .catch(err => {
-                return response.json({ "erro:": err })
-            });
+        let docs = await myTrainerClass.userLastSeen(db, file.collection, file.id, file.lastSeen, file.coords);
+
+        let res;
+        switch (docs.status) {
+            case "ok":
+                res = { status: 200 }
+                break;
+
+            case "empty":
+                res = { status: false }
+                break;
+
+            case "err":
+                res = { status: 502 }
+                break;
+
+            default:
+                res = { status: 500 };
+        }
+
+        return response.json(res);
     });
 });
 
-//O "last_personal_access" procura o documento e atualiza as o ultimo acesso do usuario.
-exports.last_personal_access = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
+exports.training_confirmation = functions.https.onRequest((request, response) => {
+    corsPost(request, response, async () => {
+        let file = request.body;
+        let myTrainerClass = MyTrainer;
 
-        let arquivo = request.body;
+        return await myTrainerClass.getUserId(db, "personal", file.idPersonal, true)
+        .then(async res => {
+            if(!res) return response.json({status: 500});
+            let meus_treinos = res.docs.meus_treinos;
+            let idMeus_treinos = meus_treinos.findIndex(a => a.id == file.idTraining);
 
-        await db.collection("personal").doc(arquivo.id)
-            .update({
-                ultimo_acesso: arquivo.visto_por_ultimo
-            })
-            .then(() => {
-                return response.json({ "pronto": "pronto" });
-            })
-            .catch(err => {
-                return response.json({ "erro:": err });
-            });
-    })
-})
+            meus_treinos[idMeus_treinos].status = file.confirmation;
+
+            await myTrainerClass.update(db, "personal", file.idPersonal, {meus_treinos});
+            let log = await myTrainerClass.update(db, "client", file.idClient, {meus_treinos});
+            return response.json(log);
+        });  
+    });
+});
 
 //Client
 
-//O "fetch_personals" pega todos os usuarios que tem o ultimo acesso no mínimo de 1 minuto antes da hora atual.
-exports.fetch_personals = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
-        let arquivo = request.body;
+exports.fetch_personal_trainers = functions.https.onRequest((request, response) => {
+    corsPost(request, response, async () => {
+        let file = request.body;
+        let myTrainerClass = MyTrainer;
 
-        //Verifica se o cliente existe.
-        cliente = await db.collection("cliente").doc(arquivo.id).get()
-        .then(snapshot => {
-            if(snapshot.empty){
-                return {"erro":"cliente não encontrado."};
-            }
-        })
-        .catch(err => {
-            return response.json({ "erro:": err });
-        });
+        let docs = await myTrainerClass.searchPersonals(db, file.lastSeen);
+        if (!docs)
+            return response.json({ status: 500 });
 
-        //Se ouver algo na variável "cliente" quer dizer que deu algo erro e será retornado.
-        if(cliente){
-            return response.json(cliente);
+        console.log(docs.status);
+        let res;
+        switch (docs.status) {
+            case "ok":
+                res = {
+                    status: 200,
+                    docs: docs.doc
+                }
+                break;
+
+            case "empty":
+                res = { status: false }
+                break;
+
+            case "err":
+                console.log(docs.err);
+                res = { status: 502 }
+                break;
+
+            default:
+                res = { status: 500 };
         }
 
-        //Procura os personals.
-        await db.collection("personal")
-            
-            //Onde o ultimo acesso tiver um index igual ao index "0" do "arquivo.ultimo_acesso[0]" (dia, mês e ano)
-            .where('ultimo_acesso', 'array-contains', arquivo.ultimo_acesso[0])
-            
-            //Pegar esses dados achados.
-            .get()
-            .then(snapshot => {
+        return response.json(res);
+    });
+});
 
-                //Se for vazio retorna uma resposta em forma de json com a mensagem "vazio".
-                if (snapshot.empty) {
-                    return response.json({ "vazio": "vazio" });
-                }
+exports.create_training = functions.https.onRequest((request, response) => {
+    corsPost(request, response, async () => {
+        const file = request.body;
+        let myTrainerClass = MyTrainer;
 
-                //O array "disponiveis" vai pegar os personals identificados.
-                var disponiveis = [];
+        let client = await myTrainerClass.getUserId(db, "client", file.idClient, true);
 
-                snapshot.forEach((doc) => {
+        let nameClient = client.docs.name + ' ' + client.docs.surname;
 
-                    //Se a hora do ultimo acesso do personal for igual do cliente, então continua, senão pula essa.
-                    if (doc.data().ultimo_acesso[1].hora == arquivo.ultimo_acesso[1].hora) {
+        return await myTrainerClass.createTraining(
+            db,
+            nameClient,
+            file.idClient,
+            file.idPersonal,
+            file.body,
+            file.sendDate
+        ).then(res => {
+            switch (res.status) {
+                case "ok":
+                    return response.json({ status: 200 });
 
-                        //Se o minuto do ultimo acesso do personal for maior do que a do cliente continua, senão pula.
-                        //Obs: diminuiu um minuto do cliente para poder pegar aqueles personais que estiveram o ultimo acesso no mínimo 1 minuto antes da hora atual do cliente.
-                        if (doc.data().ultimo_acesso[1].min >= arquivo.ultimo_acesso[1].min - 1) {
+                case "empty":
+                    return response.json({ status: false });
 
-                            //Se ocorrer tudo bem, os dados do personal serão adicionados no "disponiveis".
-                            disponiveis = [...disponiveis, [doc.id, doc.data()]];
-                        }
-                    }
-                });
+                case "err":
+                    return response.json({ status: 502 });
 
-                //Se o "disponiveis" for vazio, retorna uma resposta em json com uma mensagem "vazio". 
-                if (!disponiveis) {
-                    return response.json({ "vazio": "vazio2" });
-                }
-
-                //Se ocorrer tudo bem, retorna a resposta em json com os personais achados.
-                return response.json(disponiveis);
-            })
-            .catch(err => {
-                return response.json({ "erro:": err });
-            });
-    })
+                default:
+                    return response.json({ status: 500 });
+            }
+        });
+    });
 });
