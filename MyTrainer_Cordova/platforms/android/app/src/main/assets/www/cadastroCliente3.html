@@ -8,8 +8,12 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 
-	<script src="api/api.js"></script>
+	<script src="api/Api.js"></script>
+	<script src="api/MyTrainerServer.js"></script>
 
+	<script type="text/javascript" src="utils/Redirect.js"></script>
+	<script type="text/javascript" src="utils/ImageBase64.js"></script>
+	<script type="text/javascript" src="utils/FormattingDate.js"></script>
 	<script type="text/javascript" src="utils/fomatting.js"></script>
 	<script type="text/javascript" src="utils/addSpace.js"></script>
 
@@ -32,10 +36,12 @@
 		}
 	</style>
 	<script>
-		foto = "";
 
-		uri = decodeURIComponent(document.documentURI);
-		info = formatting(uri, [
+		var foto = "";
+
+		var uri = decodeURIComponent(document.documentURI);
+
+		var info = formatting(uri, [
 			"pt1",
 			"cep",
 			"rua",
@@ -46,83 +52,127 @@
 			"estado"
 		]);
 
-		pt1 = info[0].split(",");
+		var pt1 = info[0].split(",");
+
 		info.splice(0, 1);
+
 		info = [...pt1, ...info];
+
 		info = addSpace(info);
 
-		//verificando campos
+		var loading = false;
 
 		async function validarCampos() {
+
+			if (loading)
+				return;
+
+			loading = true;
+
 			let user = document.getElementById("user").value;
 			let senha = document.getElementById("senha").value;
 			let confsenha = document.getElementById("confsenha").value;
 
 			if (user == "" || senha == "" || confsenha == "") {
-				return alert("Por favor, preencha todos os campos!");
+				alert("Preencha os campos vazios");
+				return loading = false;
 			}
 
 			if (senha != confsenha) {
-				return alert("As senhas devem ser iguais!");
+				alert("As senhas devem ser iguais!");
+				return loading = false;
 			}
 
-			data = new Date;
-			let visto_por_ultimo = [
-				{
-					dia: data.getDate(),
-					mes: data.getMonth() + 1,
-					ano: data.getFullYear()
-				},
-				{
-					hora: data.getHours(),
-					min: data.getMinutes(),
-					seg: data.getSeconds(),
-				}
-			];
+			let date = new FormattingDate;
 
-			return createUsuario({
-				"tipo": "cliente",
+			date = date.dateFormat();
+
+			let myTrainerServer = new MyTrainerServer;
+
+			await myTrainerServer.createUser({
+				"typeUser": "client",
 				"doc": {
-					"nome": info[0],
-					"sobrenome": info[1],
-					"datanasc": info[2],
+					"name": info[0],
+					"surname": info[1],
+					"dateToBirth": info[2],
 					"phone": info[3],
-					"celular": info[4],
-					"cep": info[5],
-					"rua": info[6],
-					"numero": info[7],
-					"bairro": info[8],
-					"complemento": info[9],
-					"cidade": info[10],
-					"estado": info[11],
+					"smartphone": info[4],
+					"zipcode": info[5],
+					"street": info[6],
+					"numberHome": info[7],
+					"neighborhood": info[8],
+					"complement": info[9],
+					"city": info[10],
+					"state": info[11],
 					"email": user,
-					"senha": senha,
-					"foto": foto,
-					"criado": `
-						${visto_por_ultimo[0].dia}/${visto_por_ultimo[0].mes}/${visto_por_ultimo[0].ano} - 
-						${visto_por_ultimo[1].hora}:${visto_por_ultimo[1].min}:${visto_por_ultimo[1].seg}
+					"password": senha,
+					"imageProfile": foto,
+					"lastSeen": date,
+					"created_at": `
+						${date.dayMonthYear.day}/${date.dayMonthYear.month}/${date.dayMonthYear.year} - 
+						${date.hourMinuteSecond.hour}:${date.hourMinuteSecond.minute}:${date.hourMinuteSecond.second}
+                    `,
+					"updated_at": `
+						${date.dayMonthYear.day}/${date.dayMonthYear.month}/${date.dayMonthYear.year} - 
+						${date.hourMinuteSecond.hour}:${date.hourMinuteSecond.minute}:${date.hourMinuteSecond.second}
 					`,
 					"meus_treinos": [],
-					"comentários": []
+					"comments": []
+				}
+			}).then(res => {
+				let redirect = new Redirect;
+				try {
+					switch (res.status) {
+						case false:
+							throw new Error("Este email já existe.");
+							break;
+
+						case 500:
+							throw new Error("Erro no servidor, tente mais tarde.");
+							break;
+
+						case 502:
+							throw new Error("Erro no servidor, tente mais tarde.");
+							break;
+
+						case 400:
+							throw new Error("Erro na conexão com o servidor, tente mais tarde.");
+							break;
+					}
+
+					return redirect.submit('./loginCliente.html');
+				} catch (e) {
+					alert(e);
+					return loading = false;
 				}
 			});
 		}
 
-		function openFile(event) {
-			var input = event.target;
+		// let classImage = new ImageBase64;
 
-			var reader = new FileReader();
+		async function saveImage(event) {
+
+			let input = event.target;
+
+			let reader = new FileReader();
 
 			reader.readAsDataURL(input.files[0]);
 
 			reader.onload = function () {
-				var dataURL = reader.result;
-				console.log(dataURL)
-				var output = document.getElementById("img_perfil");
+				let dataURL = reader.result;
+
+				let output = document.getElementById('img_perfil');
 				output.src = dataURL;
 
 				return foto = dataURL;
 			};
+
+			// let image = await classImage.convert(input);
+			// if (!image)
+			// 	return alert("Por favor, selecione imagem com menos de 400KB");
+
+			// let output = document.getElementById('img_perfil');
+			// output.src = dataURL;
 		};
 	</script>
 </head>
@@ -146,7 +196,7 @@
 				<hr><br>
 				<p> Insira sua foto de perfil: * </p>
 				<br>
-				<input type="file" id="perfil" accept="image/*" onchange="openFile(event)" capture />
+				<input type="file" id="perfil" accept="image/*" onchange="saveImage(event)" capture />
 				<img id='img_perfil' width="150px" height="150px"><br>
 				<hr><br>
 				<a onclick="validarCampos()" id="cadastro">

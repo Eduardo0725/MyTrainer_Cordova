@@ -1,155 +1,83 @@
-async function createUsuario(arquivo) {
-    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
-    var myHeaders = new Headers(httpHeaders);
-    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/create_usuario',
-        {
-            method: 'POST',
-            body: JSON.stringify(arquivo),
-            headers: myHeaders,
-            mode: 'cors',
-            cache: 'default',
+class Api {
+    url;
+    headers = new Headers({ 
+        'Content-Type': 'application/json', 
+        'Accept-Charset': 'utf-8' 
+    });
+    method = {
+        get: 'GET',
+        post: 'POST', 
+        put: 'PUT', 
+        delete: 'DELETE'
+    };
+    mode = 'cors';
 
-        }).then(response => {
+    constructor(url = ''){
+        this.url = url
+    }
 
-            if (!response.ok) {
-                throw new Error("HTTP error, status: " + response.status);
+    async get(urn = '')
+    {
+        return await fetch(this.url + urn, {
+            method: this.method.get,
+            headers: this.headers,
+            mode: this.mode
+        }).then(res => {
+            if(!res.ok){
+                throw new Error("HTTP error, status: " + res.status);
             }
+            return res.json();
+        }).then(res => res).catch(err => err);
+    }
 
-            return response.json();
-        }).then(response => {
-            console.log(response);
-
-            if (response.erro) {
-                if (response.erro == "Esse email já existe.") {
-                    alert(response.erro);
-                    return false;
-                }
-                alert("Erro no banco de dados.");
-                return false;
+    async post(body, urn = '')
+    {
+        return await fetch(this.url + urn, {
+            method: this.method.post,
+            body: JSON.stringify(body),
+            headers: this.headers,
+            mode: this.mode
+        }).then(res => {
+            if(!res.ok){
+                throw new Error("HTTP error, status: " + res.status);
             }
-            return document.getElementById('form').submit();;
-        }).catch(erro => {
-            alert("Erro na requisição.");
-            console.error(erro);
-            return false;
-        });
+            return res.json();
+        }).then(res => res).catch(err => err);
+    }
+
+    async put(body, urn = '')
+    {
+        return await fetch(this.url + urn, {
+            method: this.method.put,
+            body: JSON.stringify(body),
+            headers: this.headers,
+            mode: this.mode
+        }).then(res => {
+            if(!res.ok){
+                throw new Error("HTTP error, status: " + res.status);
+            }
+            return res.json();
+        }).then(res => res).catch(err => err);
+    }
+
+    async delete(body, urn = '')
+    {
+        return await fetch(this.url + urn, {
+            method: this.method.delete,
+            body: JSON.stringify(body),
+            headers: this.headers,
+            mode: this.mode
+        }).then(res => {
+            if(!res.ok){
+                throw new Error("HTTP error, status: " + res.status);
+            }
+            return res.json();
+        }).then(res => res).catch(err => err);
+    }
 }
 
-async function findData(collection, id) {
-    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
-    var myHeaders = new Headers(httpHeaders);
-    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/find_data',
-        {
-            method: 'POST',
-            body: JSON.stringify({
-                "id": id,
-                "collection": collection
-            }),
-            headers: myHeaders,
-            mode: 'cors',
-            cache: 'default',
-
-        }).then(response => {
-
-            if (!response.ok) {
-                throw new Error("HTTP error, status: " + response.status);
-            }
-
-            return response.json();
-        }).then(response => {
-            console.log(response);
-
-            if (response.erro) {
-                alert("Erro no banco de dados.")
-                return false
-            }
-
-            return response;
-        })
-        .catch(erro => {
-            alert("Erro na requisição.");
-            console.error(erro);
-            return false;
-        });
+try{
+    module.exports = new Api;
+} catch (e){
+    //
 }
-
-async function validate(collection, email, senha) {
-    var httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
-    var myHeaders = new Headers(httpHeaders);
-    return fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/validate_usuario',
-        {
-            method: 'POST',
-            body: JSON.stringify({
-                "email": email,
-                "collection": collection,
-                "senha": senha
-            }),
-            headers: myHeaders,
-            mode: 'cors',
-            cache: 'default',
-
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error("HTTP error, status: " + response.status);
-            }
-            return response.json();
-        }).then(response => {
-            console.log(response);
-
-            if (response.erro == "Esse email não existe.") {
-                return false
-            }
-
-            if (response.erro == "Erro na conexão.") {
-                return "erro";
-            }
-
-            return response;
-        })
-        .catch(erro => {
-            alert("Erro na requisição");
-            console.error(erro);
-            return "erro";
-        });
-}
-
-
-async function Personals() {
-    let httpHeaders = { 'Content-Type': 'application/json', 'Accept-Charset': 'utf-8' };
-    let myHeaders = new Headers(httpHeaders);
-
-    data = new Date;
-    let visto_por_ultimo = [
-        {
-            dia: data.getDate(),
-            mes: data.getMonth() + 1,
-            ano: data.getFullYear()
-        },
-        {
-            hora: data.getHours(),
-            min: data.getMinutes(),
-        }
-    ];
-
-    let personals = await fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/fetch_personals', {
-        method: 'POST',
-        body: JSON.stringify({
-            id: cliente[0],
-            ultimo_acesso: visto_por_ultimo
-        }),
-        headers: myHeaders,
-        mode: 'cors',
-        cache: 'default'
-    }).then(response => {
-        return response.json();
-    }).then(response => {
-        console.log(response);
-        if (response.vazio) {
-            return [];
-        }
-        return response;
-    })
-
-    return personals;
-}
-

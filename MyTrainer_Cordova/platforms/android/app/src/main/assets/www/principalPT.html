@@ -8,136 +8,74 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 
-	<script src="api/api.js"></script>
+	<script src="api/Api.js"></script>
+	<script src="api/MyTrainerServer.js"></script>
 
-	<script src="utils/redirect.js"></script>
+	<script src="utils/Redirect.js"></script>
+	<script src="utils/FormattingDate.js"></script>
+	<script src="utils/LocalStorage.js"></script>
+	<script src="utils/barAndBox.js"></script>
 
 	<title> Meus Treinos </title>
 	<link rel="stylesheet" type="text/css" href="css/principalPT.css">
-	<style>
-		body {
-			background-color: #fff;
-		}
-	</style>
+	<link rel="stylesheet" href="./css/barAndBox.css">
 
 	<script>
-		function sair(){
-            localStorage.removeItem("usuario_id");
-            localStorage.removeItem("usuario_email");
-            localStorage.removeItem("usuario_tipo");
-            return redirect('index.html', 'post');
-		}
-		
-		async function validar() {
-			if(localStorage.getItem("usuario_email") && localStorage.getItem("usuario_id")){
-				let email = localStorage.getItem("usuario_email");
-				usuario_id = localStorage.getItem("usuario_id");
-				console.log("id => " + usuario_id + "\nemail => " + email);
 
-				validation = await findData("personal", usuario_id);
-	
-				if (!validation) {
-					alert("Email não conectado!");
-					sair();
-				} else {
-					return send_position(usuario_id);
+		var loading = false;
+
+		async function sendTime() {
+
+			if (loading)
+				return;
+
+			loading = true;
+
+			let redirect = new Redirect;
+			let local = new LocalStorage;
+			let data = local.checkUser();
+
+			if (!data) {
+				alert("Erro nos dados, entre na conta novamente!");
+				local.removeUser();
+				redirect.submit("index.html");
+			}
+
+			try {
+				let myTrainerServer = new MyTrainerServer;
+				let state = await myTrainerServer.sendTime(data.id, data.tipo);
+
+				if (!state) {
+					throw new Error("Erro no envio dos status!");
 				}
-			} else {
-				alert("Email não conectado!");
-				sair();
+
+				return loading = false;
+			} catch (e) {
+				console.log(e);
+				return loading = false;
 			}
 		}
 
-		function formatting_date(){
-			data = new Date;
-			let visto_por_ultimo = [
-				{
-					dia: data.getDate(),
-					mes: data.getMonth() + 1,
-					ano: data.getFullYear()
-				},
-				{
-					hora: data.getHours(),
-					min: data.getMinutes(),
-					seg: data.getSeconds(),
-				}
-			];
-			return visto_por_ultimo;
-		}
+		async function sendCoords(){
+			let redirect = new Redirect;
+			let local = new LocalStorage;
+			let data = local.checkUser();
 
-		function send_date(id, visto_por_ultimo){
-			let httpHeaders = { 'Content-Type' : 'application/json', 'Accept-Charset' : 'utf-8' };
-			let myHeaders = new Headers(httpHeaders);
-
-			fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/last_personal_access',{
-					method: 'POST',
-					body: JSON.stringify({ 
-						"id": id,
-						"visto_por_ultimo": visto_por_ultimo
-					}),
-					headers: myHeaders,
-					mode: 'cors',
-					cache: 'default'
-			}).then(response => {
-				return response.json();
-			}).then(response => {
-				console.log(response);
-			})
-		}
-
-		async function send_position(id) {
-			data_acesso = setInterval(()=>{
-				visto_por_ultimo = formatting_date();
-				console.log(visto_por_ultimo)
-				send_date(id, visto_por_ultimo);
-			},20000)
-			
-			navigator.geolocation.watchPosition(
-				position => {
-					lat = position.coords.latitude
-					lon = position.coords.longitude
-					console.log("Latitude => " + lat + "\nLongitude => " + lon);
-					let httpHeaders = { 'Content-Type' : 'application/json', 'Accept-Charset' : 'utf-8' };
-					let myHeaders = new Headers(httpHeaders);
-
-					fetch('https://us-central1-pw3-pam2-bd3-01.cloudfunctions.net/last_personal_coords',{
-						method: 'POST',
-						body: JSON.stringify({ 
-							id: id,
-							latitude : lat,
-							longitude : lon
-						}),
-						headers: myHeaders,
-						mode: 'cors',
-						cache: 'default'
-					}).then(response => {
-						return response.json();
-					}).then(response => {
-						visto_por_ultimo = formatting_date();
-						console.log(visto_por_ultimo)
-						send_date(id, visto_por_ultimo);
-						console.log(response);
-					})
-				},
-				err => {
-					alert(err);
-					clearInterval(data_acesso);
-				}
-			);
-		}
-		
-		validar();
-
-		function verificaTreinos() {
-			var treinos = 0;
-
-			if (treinos == 0) {
-				document.getElementById("comtreinos").style.display = "none";
-				return true;
+			if (!data) {
+				alert("Erro nos dados, entre na conta novamente!");
+				local.removeUser();
+				redirect.submit("index.html");
 			}
-			else {
-				document.getElementById("semtreinos").style.display = "none";
-				return true;
+
+			try {
+				let myTrainerServer = new MyTrainerServer;
+				let state = await myTrainerServer.sendLastSeen(data.id, data.tipo);
+
+				if (!state) {
+					throw new Error("Erro no envio das coordenadas!");
+				}
+			} catch (e) {
+				console.log(e);
 			}
 		}
 	</script>
@@ -145,63 +83,77 @@
 </head>
 
 <body>
-	<div id="comtreinos">
-		<div id="treino">
-			<div id="imagem">
-				<img src="img/perfil.png" height="60px" width="60px"></img>
-			</div>
 
-			<div id="dados">
-				<p>
-					Nome:___________________Idade:__ <br>
-					Endereço:_______________________ <br>
-					Situação:_______________ <br>
-					Início:__/__/_________Horário:__:__ <br>
-				</p>
+	<div class="box hide">
+		<a id="close" href="#" onclick="closeBox()"><img src="img/fechar.png" alt="close"></a>
+		<div class="content">
+			<a href="#"><img src="img/perfil.png" alt="perfil"></a>
+			<div id="links">
+				<a href="#">Meus Treinos</a>
+				<a href="notificaçõesPT.html">Notificações</a>
+				<a href="meuperfilPT.html">Meu Perfil</a>
+				<a href="faleconoscoPT.html">Trabalhe Conosco</a>
+				<a href="#" onclick="exit()">Sair</a>
+				<img src="img/logo.png">
+				<h4>Versão 1.0</h4>
 			</div>
 		</div>
 	</div>
 
-	<div id="semtreinos">
-		<br><br><br><br><br><br><br><br><br><br><br><br>
-		<center>
-			<h2>Você ainda não possuí treinos!</h2>
-		</center>
+	<div class="bar">
+		<a href="#" onclick="openBox()">
+			<img src="img/nav.png" width="30px" height="30px" alt="icone">
+		</a>
+		<h1>Meus Treinos</h1>
 	</div>
 
-	<header>
-		<center>
-			<h1><b>MEUS TREINOS<b></h1>
-		</center>
-		<input type="checkbox" id="check">
-		<label id="icone" for="check"><img src="img/nav.png" width="30px" height="30px" alt="icone"></label>
-		<div class="barra">
-			<label id="icone2" for="check"><img src="img/fechar.png" width="40px" height="40px" alt="icone2"></label>
-			<br>
-			<center>
-				<a href=""><img src="img/perfil.png" height="110px" width="110px"></img></a>
-				<nav>
-					<a href="principalPT.html">
-						<div class="link"><br>Meus Treinos</div>
-					</a>
-					<a href="notificaçõesPT.html">
-						<div class="link"><br>Notificações</div>
-					</a>
-					<a href="meuperfilPT.html">
-						<div class="link"><br>Meu Perfil</div>
-					</a>
-					<a href="faleconoscoPT.html">
-						<div class="link"><br>Fale Conosco</div>
-					</a>
-					<a onclick="sair()">
-						<div class="link"><br>Sair</div>
-					</a><br>
-					<img src="img/logo.png" height="60px" width="60px"></img>
-					<h4>Versão 1.0</h4>
-				</nav>
-			</center>
-		</div>
-	</header>
+	<div id="lista">
+		<li>
+			<div class="treino">
+				<div>
+					<p>Musculação</p>
+					<p>dd/mm/YYYY</p>
+				</div>
+				<p>Por: nome do cliente.</p>
+			</div>
+			<a href="#"><img src="./img/awesome-trash-alt@2x.png" alt="menu"></a>
+		</li>
+		<li>
+			<div class="treino">
+				<div>
+					<p>Musculação</p>
+					<p>dd/mm/YYYY</p>
+				</div>
+				<p>Por: nome do cliente.</p>
+			</div>
+			<a href="#"><img src="./img/awesome-trash-alt@2x.png" alt="delete"></a>
+		</li>
+	</div>
+
+	<script>
+		function exit() {
+			let local = new LocalStorage;
+			let redirect = new Redirect;
+
+			if (!local.removeUser())
+				return alert("Erro ao sair");
+
+			redirect.submit('index.html');
+		}
+
+		if (!document.querySelector('div#lista li'))
+			document.querySelector('div#lista').innerHTML = `
+				<div class='empty'>
+					<h1>Você ainda não agendou nenhum treino!</h1>
+				</div>
+			`;
+
+		sendCoords();
+
+		setInterval(() => {
+			sendTime();
+		}, 20000);
+	</script>
 </body>
 
 </html>

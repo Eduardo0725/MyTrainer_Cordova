@@ -1,76 +1,51 @@
 body {
-    margin: 0px;
+  margin: 0;
+  padding: 0;
 }
 
-#barra, #caixa {
-    position: absolute;
-    z-index: 4;
+#map {
+  position: absolute;
+  width: 100%;
+  height: 90vh;
 }
 
-#barra {
-    width: 100%;
-    height: 70px;
-    background-color: #53f63d;
-    display: flex;
-    align-items: center;
-    border: 1px solid #333;
+#principal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 70px;
+  z-index: 0;
+  background-color: white;
 }
 
-#barra input {
-    height: 30px;
-    flex: 1;
-    margin-left: 5px;
+#principal #pagina {
+  position: absolute;
+  margin-top: 5px;
+  margin-left: 5px;
 }
 
-#barra button {
-    height: 35px;
-    width: 35px;
-    margin: 0px 5px;
+#principal #pagina header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-#caixa {
-    visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    background-color: #53f63d;
-    width: 300px;
-    border: 1px solid #333;
-    font-size: 15pt;
+#principal #pagina header img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
 }
 
-#caixa #link_fechar {
-    width: 30px;
+#user-info {
+  margin-left: 10px;
 }
 
-#caixa a #img_fechar {
-    margin: 5px 0px 0px 5px;
+#user-info strong {
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
 }
 
-#caixa a #img_perfil {
-    margin: 15px 0px 30px 90px;
-}
-
-#caixa div p{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: -1.5px;
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
-    height: 65px;
-}
-
-#caixa div p a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-}
-
-#caixa p{
-    margin: 2px 10px;
-    justify-content: space-between;
-}
-
-#caixa p b{
-    margin-right: 100px;
+#user-info span {
+  color: #999;
 }

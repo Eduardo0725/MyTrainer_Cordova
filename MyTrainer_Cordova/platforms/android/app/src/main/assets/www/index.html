@@ -7,7 +7,8 @@
     <meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 	
-	<script src="utils/redirect.js"></script>
+	<script src="utils/Redirect.js"></script>
+	<script src="utils/LocalStorage.js"></script>
 
 	<title> Bem Vindo! </title>
 	<style>
@@ -22,6 +23,18 @@
 </head>
 
 <body>
+	<script>
+		let local = new LocalStorage;
+		let data = local.checkUser();
+		let redirect = new Redirect;
+
+		if(data.tipo == 'personal')
+			redirect.submit('principalPT.html');
+		
+		if(data.tipo == 'client')
+			redirect.submit('principalCliente.html');
+		
+	</script>
 	<br><br><br>
 	<center>
 		<h3> Bem vindo ao MyTrainer! </h3>
@@ -35,15 +48,5 @@
 	<header>
 		<center><img src="img/logo4.png" height="60px" width="60px"></center>
 	</header>
-
-	<script>
-		if(localStorage.getItem("usuario_tipo")){
-			if(localStorage.getItem("usuario_tipo") == 1){
-				redirect('principalCliente.html', 'post');
-			}else{
-				redirect('principalPT.html', 'post');
-			}
-		}
-	</script>
 </body>
 </html>

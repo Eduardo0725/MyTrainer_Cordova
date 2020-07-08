@@ -2,29 +2,59 @@
 <html>
 
 <head>
-	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon"/>
+	<link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
 	<meta charset="UTF-8">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 	<title> Meus Treinos </title>
 	<link rel="stylesheet" type="text/css" href="css/meustreinosCliente.css">
-	<link rel="stylesheet" type="text/css" href="css/box.css">
+	<link rel="stylesheet" type="text/css" href="css/barAndBox.css">
 
+	<link rel="stylesheet" href="./css/principalPT.css">
+
+	<script src="api/Api.js"></script>
+	<script src="api/MyTrainerServer.js"></script>
+
+	<script src="utils/Redirect.js"></script>
+	<script src="utils/LocalStorage.js"></script>
+	<script src="utils/FormattingDate.js"></script>
+	<script src="utils/barAndBox.js"></script>
+	
+	<script src="js/client/Client.js"></script>
+	<script src="./components/meus_treinos.js"></script>
 </head>
 
-<body>
-
+<body onload="meus_treinos('client', 'alert')">
 	<div id="page">
-		<header>
-			<a>
+		<div class="box hide">
+			<a id="close" href="#" onclick="closeBox()"><img src="img/fechar.png" alt="close"></a>
+			<div class="content">
+				<a href="#"><img src="img/perfil.png" alt="perfil"></a>
+				<div id="links">
+					<a href="PrincipalCliente.html">Pesquisar Treiners</a>
+					<a href="#" class="selected">Meus Treinos</a>
+					<a href="meuperfilCliente.html">Meu Perfil</a>
+					<a href="cadastroPT.html">Trabalhe Conosco</a>
+					<a href="#" onclick="client.exit()">Sair</a>
+					<img src="img/logo.png">
+					<h4>Versão 1.0</h4>
+				</div>
+			</div>
+		</div>
+
+		<div class="bar">
+			<a href="#" onclick="openBox()">
 				<img src="img/nav.png" width="30px" height="30px" alt="icone">
 			</a>
-			<h1>MEUS TREINOS</h1>
-		</header>
+			<h1>Meus Treinos</h1>
+		</div>
 
 		<div id="lista">
-			<li>
+			<div class='load'>
+				<h1>carregando...</h1>
+			</div>
+			<!-- <li>
 				<div class="treino">
 					<div>
 						<p>Musculação</p>
@@ -43,27 +73,9 @@
 					<p>Por: nome do personal.</p>
 				</div>
 				<a href="#"><img src="./img/awesome-trash-alt@2x.png" alt="delete"></a>
-			</li>
-		</div>
-
-		<div class="box hide">
-			<a id="close" href="#"><img src="img/fechar.png" alt="close"></a>
-			<div class="content">
-				<a href="#"><img src="img/perfil.png" alt="perfil"></a>
-				<div id="links">
-					<a href="PrincipalCliente.html">Pesquisar Treiners</a>
-					<a href="meustreinosCliente.html">Meus Treinos</a>
-					<a href="meuperfilCliente.html">Meu Perfil</a>
-					<a href="cadastroPT.html">Trabalhe Conosco</a>
-					<a href="index.html">Sair</a>
-					<img src="img/logo.png">
-					<h4>Versão 1.0</h4>
-				</div>
-			</div>
+			</li> -->
 		</div>
 	</div>
-
-
 </body>
 
 </html>

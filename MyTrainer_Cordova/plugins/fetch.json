@@ -1,16 +1,24 @@
 {
-  "cordova-plugin-whitelist": {
+  "cordova-plugin-geolocation": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-whitelist@1"
+      "id": "cordova-plugin-geolocation@^4.0.2"
     },
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-geolocation": {
+  "cordova-plugin-dialogs": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-geolocation@4.0.2"
+      "id": "cordova-plugin-dialogs@^2.0.2"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-whitelist": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-whitelist@1"
     },
     "is_top_level": true,
     "variables": {}

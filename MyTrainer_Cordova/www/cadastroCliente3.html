@@ -8,8 +8,12 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
 
-	<script src="api/api.js"></script>
+	<script src="api/Api.js"></script>
+	<script src="api/MyTrainerServer.js"></script>
 
+	<script type="text/javascript" src="utils/Redirect.js"></script>
+	<script type="text/javascript" src="utils/ImageBase64.js"></script>
+	<script type="text/javascript" src="utils/FormattingDate.js"></script>
 	<script type="text/javascript" src="utils/fomatting.js"></script>
 	<script type="text/javascript" src="utils/addSpace.js"></script>
 
@@ -33,14 +37,11 @@
 	</style>
 	<script>
 
-		//A variável "foto" é criada e recebe uma string vazia caso o usuario não adicione uma imagem.
-		foto = "";
+		var foto = "";
 
-		//Vai pegar a url, decodificá-la e passar para a variável "uri".
-		uri = decodeURIComponent(document.documentURI);
+		var uri = decodeURIComponent(document.documentURI);
 
-		//A função "formatting(url, array)" vai procurar na url as propriedades que estão no array e retorna seus valores para a variável "info".
-		info = formatting(uri, [
+		var info = formatting(uri, [
 			"pt1",
 			"cep",
 			"rua",
@@ -51,115 +52,127 @@
 			"estado"
 		]);
 
-		//A variável "pt1" recebe o valor do index "0" do array "info" com ".split(string)".
-		//O ".split(string)" transforma uma string em array, separando ela onde um caracter(s) da string é igual a string do parametro.
-		pt1 = info[0].split(",");
+		var pt1 = info[0].split(",");
 
-		//O ".splice(position, remove, add)" começa a remover a partir de um determinado index ("position") até a quantidade especificada no "remove" e troca elas pelo "add".
-		//Nesse caso só é feito a remoção do index "0".
 		info.splice(0, 1);
 
-		//Os valores do "info" são substituidos pelos valores do array "pt1" mais os antigos valores do "info".
 		info = [...pt1, ...info];
 
-		//O "addSpace" troca o sinal de soma ("+") por um espaço (" "), pois na decodificação isso não é feito.
 		info = addSpace(info);
 
-		//verificando campos
+		var loading = false;
+
 		async function validarCampos() {
+
+			if (loading)
+				return;
+
+			loading = true;
+
 			let user = document.getElementById("user").value;
 			let senha = document.getElementById("senha").value;
 			let confsenha = document.getElementById("confsenha").value;
 
 			if (user == "" || senha == "" || confsenha == "") {
-				return alert("Por favor, preencha todos os campos!");
+				alert("Preencha os campos vazios");
+				return loading = false;
 			}
 
 			if (senha != confsenha) {
-				return alert("As senhas devem ser iguais!");
+				alert("As senhas devem ser iguais!");
+				return loading = false;
 			}
 
-			//A variável "data" pegará a data atual do usuário.
-			data = new Date;
+			let date = new FormattingDate;
 
-			//A variável "visto_por_ultimo" formará um array com dois objetos. 
-			//O primeiro vai ter dia, mês e ano. 
-			//O segundo vai ter hora, minutos e segundos.
-			let visto_por_ultimo = [
-				{
-					dia: data.getDate(),
-					mes: data.getMonth() + 1,
-					ano: data.getFullYear()
-				},
-				{
-					hora: data.getHours(),
-					min: data.getMinutes(),
-					seg: data.getSeconds(),
-				}
-			];
+			date = date.dateFormat();
 
-			//Depois é iniciado a função "createUsuario(objeto)" que vai criar a conta do usuario usado o objeto passado no parametro.
-			return createUsuario({
-				"tipo": "cliente",
+			let myTrainerServer = new MyTrainerServer;
+
+			await myTrainerServer.createUser({
+				"typeUser": "client",
 				"doc": {
-					"nome": info[0],
-					"sobrenome": info[1],
-					"datanasc": info[2],
+					"name": info[0],
+					"surname": info[1],
+					"dateToBirth": info[2],
 					"phone": info[3],
-					"celular": info[4],
-					"cep": info[5],
-					"rua": info[6],
-					"numero": info[7],
-					"bairro": info[8],
-					"complemento": info[9],
-					"cidade": info[10],
-					"estado": info[11],
+					"smartphone": info[4],
+					"zipcode": info[5],
+					"street": info[6],
+					"numberHome": info[7],
+					"neighborhood": info[8],
+					"complement": info[9],
+					"city": info[10],
+					"state": info[11],
 					"email": user,
-					"senha": senha,
-					"foto": foto,
-					"criado": `
-						${visto_por_ultimo[0].dia}/${visto_por_ultimo[0].mes}/${visto_por_ultimo[0].ano} - 
-						${visto_por_ultimo[1].hora}:${visto_por_ultimo[1].min}:${visto_por_ultimo[1].seg}
+					"password": senha,
+					"imageProfile": foto,
+					"lastSeen": date,
+					"created_at": `
+						${date.dayMonthYear.day}/${date.dayMonthYear.month}/${date.dayMonthYear.year} - 
+						${date.hourMinuteSecond.hour}:${date.hourMinuteSecond.minute}:${date.hourMinuteSecond.second}
+                    `,
+					"updated_at": `
+						${date.dayMonthYear.day}/${date.dayMonthYear.month}/${date.dayMonthYear.year} - 
+						${date.hourMinuteSecond.hour}:${date.hourMinuteSecond.minute}:${date.hourMinuteSecond.second}
 					`,
 					"meus_treinos": [],
-					"comentários": []
+					"comments": []
+				}
+			}).then(res => {
+				let redirect = new Redirect;
+				try {
+					switch (res.status) {
+						case false:
+							throw new Error("Este email já existe.");
+							break;
+
+						case 500:
+							throw new Error("Erro no servidor, tente mais tarde.");
+							break;
+
+						case 502:
+							throw new Error("Erro no servidor, tente mais tarde.");
+							break;
+
+						case 400:
+							throw new Error("Erro na conexão com o servidor, tente mais tarde.");
+							break;
+					}
+
+					return redirect.submit('./loginCliente.html');
+				} catch (e) {
+					alert(e);
+					return loading = false;
 				}
 			});
 		}
 
-		//A função "openFile(event)" vai mostrar a imagem escolhida pelo usuario na tela e converte-lá em base64 e coloca-lá na variável "foto".
-		//O parametro "event" é a informação passada pelo input sobre o arquivo escolhido.
-		function openFile(event) {
+		// let classImage = new ImageBase64;
 
-			//A variável "input" vai pegar os arquivos selecionados no input,
-			//mas como essa função é ativada só quando selecionar o arquivo,
-			//só vai ter um arquivo, se for ativada depois de várias seleções,
-			//o "event.target" vai ter uma lista de arquivos.
-			var input = event.target;
+		async function saveImage(event) {
 
-			//A variável "reader" vai receber a classe "FileReader()",
-			//que vai ser usada na conversão de imagem para base64.
-			var reader = new FileReader();
+			let input = event.target;
 
-			//A função "reader.readAsDataURL(file)" vai converter as informações do "input.files[0]" em base64.
+			let reader = new FileReader();
+
 			reader.readAsDataURL(input.files[0]);
 
-			//Quando o reader estiver carregando, vai iniciar uma arrow function.
 			reader.onload = function () {
+				let dataURL = reader.result;
 
-				//A variável "dataURL" vai receber a imagem convertida em "reader.result".
-				var dataURL = reader.result;
-				console.log(dataURL)
-
-				//A variável "output" vai controlar o elemento de img indicando seu id.
-				var output = document.getElementById("img_perfil");
-
-				//O "output.scr" recebe a imagem convertida para mostrar em tela.
+				let output = document.getElementById('img_perfil');
 				output.src = dataURL;
 
-				//É retornado a variável "foto" recebendo a imagem convertida.
 				return foto = dataURL;
 			};
+
+			// let image = await classImage.convert(input);
+			// if (!image)
+			// 	return alert("Por favor, selecione imagem com menos de 400KB");
+
+			// let output = document.getElementById('img_perfil');
+			// output.src = dataURL;
 		};
 	</script>
 </head>
@@ -183,7 +196,7 @@
 				<hr><br>
 				<p> Insira sua foto de perfil: * </p>
 				<br>
-				<input type="file" id="perfil" accept="image/*" onchange="openFile(event)" capture />
+				<input type="file" id="perfil" accept="image/*" onchange="saveImage(event)" capture />
 				<img id='img_perfil' width="150px" height="150px"><br>
 				<hr><br>
 				<a onclick="validarCampos()" id="cadastro">

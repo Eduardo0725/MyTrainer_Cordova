@@ -1,137 +1,85 @@
+body {
+	margin: 0;
+	padding: 0;
+	height: 100vh;;
+}
+
 a{
 	text-decoration: none;
 }
 
-.rodape{
-	position: absolute;
-	height: 90px;
-	width: 99%;
-	top: 85%;
-	left: 2px;
-	border: 3px solid #000;
-	background-color: #000;
-	color: #fff;
+#lista {
+    background-color: #f0f0f5;
+    width: 100%;
+    height: 90vh;
 }
 
-#comtreinos{
-	position: absolute;
-	height: 85%;
-	width: 98%;
-	top: 80px;
-	left: 1%;
-	display: none;
+#lista li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    max-height: 60px;
+
+    list-style: none;
+
+    border: 1px solid #333;
 }
 
-#semtreinos{
-	position: absolute;
-	height: 85%;
-	width: 98%;
-	top: 80px;
-	left: 1%;
-	display: block;
+#lista li .treino {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    margin-left: 10px;
 }
 
-#treino{
-	position: absolute;
-	height: 100px;
-	width: 98%;
-	top: 10px;
-	left: 1%;
-	border: 1px solid #000;
-	border-radius: 20px;
+#lista li .treino div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
-#imagem{
-	position: absolute;
-	height: 60px;
-	width: 70px;
-	top: 20px;
-	left: 15px;
+#lista li .treino div p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-#dados{
-	position: absolute;
-	height: 90px;
-	width: 75%;
-	top: 5px;
-	left: 25%;
+#lista li .treino div p + p {
+    margin-left: 0px;
+    
+    font-size: 14px;
+    font-weight: normal;
 }
 
-header{
-	position: fixed;
-	height: 70px;
+#lista li .treino p {
+    margin: 1px 0;
+    font-size: 14px;
+}
+
+#lista li a {
+    margin: 15px;
+}
+
+#lista li a img {
+    width: 20px;
+    height: 20px;
+}
+
+#lista div.empty {
+	background-color: white;
+	display: flex;
+
 	width: 100%;
-	top: 0px;
-	left: 0px;
-	background-color: #53f63d;
-	color: #000;
-	border-bottom: 2px solid #000;
+	height: 100%;
+
+	align-items: center;
+	justify-content: center;
 }
 
-#check{
-	display: none;
-}			
-
-#icone{
-	cursor: pointer;
-	padding: 15px;
-	position: fixed;
-	height: 40px;
-	width: 40px;
-	top: 5px;
-	left: 5px;
-	z-index: 1;
-}	
-
-#check:checked ~ #icone2{
-	position: fixed;
-	height: 40px;
-	width: 40px;
-	z-index: 1;
-}
-
-.barra{
-	position: fixed;
-	background-color: #53f63d;
-	height: 652px;
-	width: 300px;
-	color: #000;
-	top: -2px;
-	transition: all .2s linear;
-	left: -10002px;
-	z-index: 1;
-	border: 2px solid #000;
-}
-
-nav{
-	width: 100%;
-	position: fixed; 
-	top: 180px;
-}
-
-.link{
-	background-color: #53f63d;
-	width: 100%;
-	height: 65px;
-	font: 'Arial';
-	font-size: 15pt;
-	transition: all .2s linear;
-	color: #000;
-	opacity: 0;
-	border-top: 1px solid #000;
-	border-bottom: 1px solid #000;
-}
-
-.link:hover{
-	background-color: #f0f0f0;
-	color: #000;
-}
-
-#check:checked ~ .barra{
-	transform: translateX(10000px);
-}
-
-#check:checked ~ .barra nav a .link{
-	opacity: 1;
-	margin-top: 0;
+#lista div.empty h1 {
+	font-size: 16px;
 }

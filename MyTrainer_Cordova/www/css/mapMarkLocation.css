@@ -1,0 +1,58 @@
+#mapMarkLocation {
+    background-color: #fefefe; 
+    height: 90%;
+}
+
+.teste {
+    height: 200px;
+    width: 100%;
+    z-index: 4;
+    bottom: 30px;
+    display: flex;
+}
+
+.teste1 {
+    background-color: #f5fefe;
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.teste1 div div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.teste1 div div input {
+    margin: 10px 5px; 
+    width: 85px;
+    height: 25px;
+    font-size: 16px;
+    border: #333 solid 1px;
+}
+
+#buttonsMarkLocation {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#buttonsMarkLocation button {
+    width: 120px;
+    height: 40px;
+    margin: 5px 20px 20px;
+
+    font-size: 18px;
+    background-color: #49BA69;
+    border: 0;
+}
+
+#buttonsMarkLocation button + button {
+    background-color: #F04040;
+}

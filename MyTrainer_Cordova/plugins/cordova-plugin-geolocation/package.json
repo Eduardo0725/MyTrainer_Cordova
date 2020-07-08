@@ -1,28 +1,27 @@
 {
-  "_from": "cordova-plugin-geolocation@4.0.2",
+  "_from": "cordova-plugin-geolocation@^4.0.2",
   "_id": "cordova-plugin-geolocation@4.0.2",
   "_inBundle": false,
   "_integrity": "sha512-QGThnPKzPxESHkruZlpE0+5aFBVOet8al0vIJ7laSUOQHIC1dd/JY6peVIbtLboKi5Dap1wCKRubOqPqH8xcQA==",
   "_location": "/cordova-plugin-geolocation",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "cordova-plugin-geolocation@4.0.2",
+    "raw": "cordova-plugin-geolocation@^4.0.2",
     "name": "cordova-plugin-geolocation",
     "escapedName": "cordova-plugin-geolocation",
-    "rawSpec": "4.0.2",
+    "rawSpec": "^4.0.2",
     "saveSpec": null,
-    "fetchSpec": "4.0.2"
+    "fetchSpec": "^4.0.2"
   },
   "_requiredBy": [
-    "#USER",
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-geolocation/-/cordova-plugin-geolocation-4.0.2.tgz",
   "_shasum": "4668a01ae8a49e27c5515f8b81880983e96d7eb3",
-  "_spec": "cordova-plugin-geolocation@4.0.2",
-  "_where": "C:\\Users\\Eduardo\\Desktop\\MyTrainer\\app\\MyTrainerApp",
+  "_spec": "cordova-plugin-geolocation@^4.0.2",
+  "_where": "C:\\Users\\Eduardo\\Desktop\\MyTrainer",
   "author": {
     "name": "Apache Software Foundation"
   },

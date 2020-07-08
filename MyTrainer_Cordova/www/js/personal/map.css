@@ -1,0 +1,53 @@
+#pageDetail {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+}
+
+#map {
+    position: fixed;
+    width: 100%;
+    height: 50vh;
+}
+
+#detail {
+    position: fixed;
+    bottom: 0;
+    height: 40vh;
+    width: 100%;
+}
+
+#detail h1 {
+    text-align: center;
+}
+
+#detail div.info {
+    margin: 0 10px 10px;
+}
+
+#detail div.info p {
+    margin: 0;
+}
+
+#detail div.info p + p {
+    margin-top: 5px;
+}
+
+#detail div.buttons {
+    flex: 1;
+    display: flex;
+}
+
+#detail div.buttons button {
+    width: 100%;
+    margin: 30px 20px;
+    border-radius: 10px;
+    border: 0;
+    font-size: 16px;
+    height: 50px;
+    background-color: #4CED69;
+}
+
+#detail div.buttons button + button {
+    background-color: #F04040;
+}
