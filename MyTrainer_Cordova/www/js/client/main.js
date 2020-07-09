@@ -1,8 +1,8 @@
 var client;
 
-function main(){
+async function main(){
     client = new Client();
-    client.start('map');
-    client.validate();
+    await client.validate();
+    await client.start('map');
     client.setIntervalUpdate();
 }

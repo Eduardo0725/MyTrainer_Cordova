@@ -18,18 +18,19 @@ class Client {
         this.map2 = false;
         this.myTrainings = {};
     }
-    
+
     async start(container) {
         let coords = await this.myTrainerServer.searchPersonals();
         this.pageDetail = new PageDetail;
         this.map1 = new MapBox(container);
-        this.map1.start((coords.status === 200) ? coords.docs : undefined);
+        await this.map1.start((coords.status === 200) ? coords.docs : undefined);
         document.querySelector('a#btnSearch').addEventListener('click',
             async () => await searchLocation()
         );
         this.map1.map.on('click', 'points', (e) => {
             this.startPage(e.features[0].properties);
         });
+        return true;
     }
 
     async validate() {
@@ -41,6 +42,7 @@ class Client {
 
         this.data = data;
         this.box = await this.myTrainerServer.getData(data.id, "client");
+        return true;
     }
 
     exit() {

@@ -1,7 +1,16 @@
 class PageDetail {
     start(prop, clickRemove, startPageTwo) {
-        const [id, avatar, nome, idade, tipo_de_treino, celular, bio]
-            = [prop.id, prop.avatar, prop.nome, prop.idade, prop.tipo_de_treino, prop.celular, prop.bio];
+        // const [id, avatar, nome, idade, tipo_de_treino, celular, bio]
+        //     = [prop.id, prop.avatar, prop.nome, prop.idade, prop.tipo_de_treino, prop.celular, prop.bio];
+
+        
+        const id = prop.id; 
+        const avatar = prop.avatar; 
+        const nome = prop.nome; 
+        const idade = prop.idade; 
+        const tipo_de_treino = prop.tipo_de_treino; 
+        const celular = prop.celular; 
+        const bio = prop.bio;
 
         let principal = document.querySelector("#principal");
         principal.removeAttribute("class");
@@ -23,7 +32,7 @@ class PageDetail {
     
                     <div id="buttons">
                         <button type='button' onclick='${startPageTwo}("${id}", "${clickRemove}")'>Agendar Aula</button>
-                        <button type='button'>Chat</button>
+                        <button><a href="whatsapp://send?phone=11980793780">Chat</a></button>
                     </div>
                 </div>
             `;

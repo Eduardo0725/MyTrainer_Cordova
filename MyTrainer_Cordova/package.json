@@ -4,17 +4,21 @@
   "version": "1.0.0",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "main": "main.js",
-  "scripts": {},
+  "scripts": {
+    "c-build-a": " cordova build android",
+    "c-pf-add-a": "cordova platform add android",
+    "c-pf-rm-a": "cordova platform rm android"
+  },
   "keywords": [
     "ecosystem:cordova"
   ],
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "dependencies": {
-    "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-plugin-dialogs": "^2.0.2",
-    "cordova-plugin-geolocation": "^4.0.2"
+    "cordova-plugin-geolocation": "^4.0.2",
+    "mobi.moica.whatsapp": "git+https://github.com/ranjitpandit/whatsapp-phonegap-plugin.git"
   },
   "cordova": {
     "plugins": {
@@ -23,8 +27,7 @@
       "cordova-plugin-whitelist": {}
     },
     "platforms": [
-      "browser",
-      "android"
+      "browser"
     ]
   },
   "devDependencies": {

@@ -26,13 +26,13 @@ class MapBox {
         this.status = false;
     }
 
-    async start(coords = []) {
+    async start(coords = false) {
         try {
             this.map.on('load', () => {
                 this.controller.geolocateMap(this.map);
                 this.controller.navigatorMap(this.map);
 
-                this.source.addSource(this.map, coords.docs);
+                this.source.addSource(this.map, coords);
 
                 this.layers.addStylePoints(this.map);
 
