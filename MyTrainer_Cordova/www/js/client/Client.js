@@ -25,7 +25,7 @@ class Client {
         this.map1 = new MapBox(container);
         await this.map1.start((coords.status === 200) ? coords.docs : undefined);
         document.querySelector('a#btnSearch').addEventListener('click',
-            async () => await searchLocation()
+            async () => await this.searchLocation()
         );
         this.map1.map.on('click', 'points', (e) => {
             this.startPage(e.features[0].properties);
@@ -59,7 +59,7 @@ class Client {
         let lngLat = await this.myTrainerServer.geocoding(value).then(res => res.features[0].center);
         console.log(lngLat);
 
-        (map2) ? map2.flyTo(lngLat) : map.flyTo(lngLat);
+        (this.map2) ? this.map2.flyTo(lngLat) : this.map1.flyTo(lngLat);
     }
 
     async createTraining(idPersonal) {
